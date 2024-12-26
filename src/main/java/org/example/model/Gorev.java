@@ -1,14 +1,13 @@
 package org.example.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
-import java.sql.Date;
 
 public class Gorev {
     private int gorevId;
     private String gorevAdi;
-    private Date baslamaTarihi;
-    private Date bitisTarihi;
+    private LocalDate baslamaTarihi;
+    private LocalDate bitisTarihi;
     private int ertelemeMiktari;
     private int adamGunSayisi;
     private String durum;
@@ -16,8 +15,8 @@ public class Gorev {
     private int calisanId;
 
     // Constructor
-    public Gorev(int gorevId, String gorevAdi, Date baslamaTarihi, Date bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, int projeId, int calisanId) {
-        this.gorevId = gorevId;
+    public Gorev(String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, int projeId, int calisanId) {
+
         this.gorevAdi = gorevAdi;
         this.baslamaTarihi = baslamaTarihi;
         this.bitisTarihi = bitisTarihi;
@@ -45,19 +44,19 @@ public class Gorev {
         this.gorevAdi = gorevAdi;
     }
 
-    public Date getBaslamaTarihi() {
+    public LocalDate getBaslamaTarihi() {
         return baslamaTarihi;
     }
 
-    public void setBaslamaTarihi(Date baslamaTarihi) {
+    public void setBaslamaTarihi(LocalDate baslamaTarihi) {
         this.baslamaTarihi = baslamaTarihi;
     }
 
-    public Date getBitisTarihi() {
+    public LocalDate getBitisTarihi() {
         return bitisTarihi;
     }
 
-    public void setBitisTarihi(Date bitisTarihi) {
+    public void setBitisTarihi(LocalDate bitisTarihi) {
         this.bitisTarihi = bitisTarihi;
     }
 

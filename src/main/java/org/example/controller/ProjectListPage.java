@@ -12,15 +12,17 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ProjectListPage extends JPanel {
+public class ProjectListPage extends JPanel{
     private JTable projectTable;
     private DefaultTableModel tableModel;
+
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setText("Görev Ekle");
             setFont(new Font("Tahoma", Font.PLAIN, 14));
         }
+
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -45,8 +47,11 @@ public class ProjectListPage extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     fireEditingStopped();
-                    String projectName = (String) projectTable.getValueAt(row, 1);
-                    JOptionPane.showMessageDialog(button, projectName + " için görev ekleniyor!", "Görev Ekle", JOptionPane.INFORMATION_MESSAGE);
+                    int projectId = (int)projectTable.getValueAt(row, 0);
+                    ProjectTasksPage projectTasksPage = new ProjectTasksPage(projectId);
+
+
+
                 }
             });
         }
