@@ -58,7 +58,7 @@ public class ProjectTasksPage extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 onBack.run();
-            }
+            }.
         });
 
         bottomPanel.add(addTaskButton);
