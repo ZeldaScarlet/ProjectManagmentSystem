@@ -1,5 +1,7 @@
 package org.example.controller;
 
+import org.example.model.Proje;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -9,7 +11,7 @@ public class EmployeeDetailPage extends JPanel {
     private JTable projectTable;
     private DefaultTableModel tableModel;
 
-    public EmployeeDetailPage(JPanel previousFrame, String employeeName, List<Object[]> employeeProjects) {
+    public EmployeeDetailPage(JPanel previousFrame, String employeeName, List<Proje> employeeProjects) {
         setLayout(new BorderLayout());
 
         // Geri butonu ekle
@@ -48,7 +50,7 @@ public class EmployeeDetailPage extends JPanel {
         loadEmployeeProjects(employeeProjects, completedLabel, incompleteLabel);
     }
 
-    private void loadEmployeeProjects(List<Object[]> employeeProjects, JLabel completedLabel, JLabel incompleteLabel) {
+    private void loadEmployeeProjects(List<Proje> employeeProjects, JLabel completedLabel, JLabel incompleteLabel) {
         int completedCount = 0;
         int incompleteCount = 0;
 
@@ -56,11 +58,13 @@ public class EmployeeDetailPage extends JPanel {
         tableModel.setRowCount(0);
 
         // Proje verilerini tabloya ekle
-        for (Object[] project : employeeProjects) {
-            tableModel.addRow(project);
+        for (Proje project : employeeProjects) {
+            // Proje bilgilerini tabloya ekle (Proje nesnesinden gerekli bilgileri al)
+            Object[] row = {project.getProjeAdi(), project.getBaslamaTarihi(), project.getBitisTarihi(), project.getDurum()};
+            tableModel.addRow(row);
 
-            // Proje durumu istatistikleri hesapla
-            String status = (String) project[3];
+            // Proje durumu istatistiklerini hesapla
+            String status = project.ge;
             if ("Tamamlandı".equalsIgnoreCase(status)) {
                 completedCount++;
             } else {

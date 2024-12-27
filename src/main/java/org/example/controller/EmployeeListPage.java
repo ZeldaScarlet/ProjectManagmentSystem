@@ -47,12 +47,14 @@ public class EmployeeListPage extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     int selectedRow = employeeTable.getSelectedRow();
+                    CalisanServisi calisan = new CalisanServisi();
                     if (selectedRow >= 0) {
                         // Tablodan çalışan bilgilerini al
+                        int employeeId = (int) employeeTable.getValueAt(selectedRow, 0);
                         String employeeName = (String) employeeTable.getValueAt(selectedRow, 1); // Çalışan adı
 
                         // Çalışanın görev aldığı projeleri veritabanından al (örnek veri ile gösterim)
-                        List<Object[]> employeeProjects = getEmployeeProjects(employeeName);
+                        List<Proje> employeeProjects = calisan.getProjectsByEmployeeId(employeeId);
 
                         // Çalışanın projeler sayfasını aç
                         EmployeeDetailPage employeeProjectsPage = new EmployeeDetailPage(previousFrame, employeeName, employeeProjects);
