@@ -1,11 +1,17 @@
 package org.example.controller;
 
+import org.example.model.Calisan;
+import org.example.model.Proje;
+import org.example.service.CalisanServisi;
+import org.example.service.ProjeServisi;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class EmployeeListPage extends JPanel {
     private JTable employeeTable;
@@ -59,7 +65,7 @@ public class EmployeeListPage extends JPanel {
         }
     }
 
-    public EmployeeListPage() {
+    public EmployeeListPage(JPanel previousFrame) {
         setLayout(new BorderLayout());
 
         // Tablo modeli ve tablo oluşturuluyor
@@ -72,8 +78,7 @@ public class EmployeeListPage extends JPanel {
         employeeTable.getColumn("Detay").setCellEditor(new ButtonEditor(new JCheckBox()));
         JScrollPane scrollPane = new JScrollPane(employeeTable);
 
-        // Örnek çalışan verilerini tabloya yükle
-        loadExampleEmployees();
+
 
         // Tablo stil ayarları
         employeeTable.setRowHeight(30); // Satır yüksekliği
@@ -81,6 +86,8 @@ public class EmployeeListPage extends JPanel {
         employeeTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 18)); // Başlık yazı tipi ve boyutu
         employeeTable.getTableHeader().setBackground(new Color(220, 220, 220)); // Başlık arka plan rengi
         add(scrollPane, BorderLayout.CENTER);
+
+        loadEmployees();
 
         // Yeni çalışan ekleme butonu
         JButton addEmployeeButton = new JButton("Yeni Çalışan Ekle");
@@ -100,49 +107,61 @@ public class EmployeeListPage extends JPanel {
         // Panel düzeni
         add(scrollPane, BorderLayout.CENTER);
         add(addEmployeeButton, BorderLayout.SOUTH);
+
+        BackButton backButton = new BackButton(this, previousFrame);
+        add(backButton, BorderLayout.NORTH);
+
     }
 
-    // Örnek çalışan verilerini tabloya yükleyen metod
-    private void loadExampleEmployees() {
-        // Tabloyu temizle
-        tableModel.setRowCount(0);
-
-        // Örnek çalışan verileri
-        Object[][] exampleEmployees = {
-                {1, "Ahmet Yılmaz"},
-                {2, "Ayşe Demir"},
-                {3, "Mehmet Kaya"}
-        };
-
-        // Örnek verileri tabloya ekle
-        for (Object[] employee : exampleEmployees) {
-            tableModel.addRow(employee);
-        }
-    }
-
-    // Yeni bir çalışan ekleme işlemi (şu an için sadece gösterim)
     private void addNewEmployee() {
         // Çalışan detayları için giriş alanları oluşturuluyor
         JTextField userNameField = new JTextField(20);
 
         // Giriş alanlarını bir panelde düzenle
-        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel inputPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         inputPanel.add(new JLabel("Kullanıcı Adı:"));
         inputPanel.add(userNameField);
 
-
-        // Kullanıcıdan bilgi alma
+        CalisanServisi calisanServisi = new CalisanServisi();
         int result = JOptionPane.showConfirmDialog(this, inputPanel, "Yeni Çalışan Ekle",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
             String userName = userNameField.getText();
 
-            // Yeni çalışan ekleme işlemi (şu anda sadece mesaj gösteriliyor)
-            JOptionPane.showMessageDialog(this, "Çalışan başarıyla eklendi!", "Bilgi", JOptionPane.INFORMATION_MESSAGE);
+            if (userName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Çalışan adı boş olamaz!", "Hata", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            // Tabloyu güncelle (yeni çalışan ekleniyor)
-            tableModel.addRow(new Object[] {tableModel.getRowCount() + 1, userName});
+            try {
+                // Veritabanına yeni çalışan ekleme
+                Calisan yeniCalisan = new Calisan(0, userName); // ID sıfır olarak veriliyor, veritabanı otomatik oluşturacak
+                calisanServisi.addEmployee(yeniCalisan); // CalisanServisi üzerinden çalışanı ekle
+
+                // Tabloyu güncelle
+                loadEmployees();
+
+                JOptionPane.showMessageDialog(this, "Çalışan başarıyla eklendi!", "Bilgi", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Çalışan eklenirken bir hata oluştu: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void loadEmployees() {
+        tableModel.setRowCount(0); // Tabloyu temizle
+
+        // ProjectService sınıfını kullanarak projeleri al
+        CalisanServisi calisanServisi = new CalisanServisi();
+        List<Calisan> calisanlar = calisanServisi.getAllEmployees();
+        for (Calisan calisan : calisanlar) {
+            Object[] rowData = {
+                    calisan.getCalisanId(),
+                    calisan.getAdiSoyadi(),
+                    "Detay" // "Görev Ekle" butonunu son sütunda ekliyoruz
+            };
+            tableModel.addRow(rowData); // Yeni satır ekle
         }
     }
 }

@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class ConnectionManager {
     // Veritabanı bağlantısı için gerekli bilgiler
-    private static final String URL = "jdbc:mysql://localhost:3306/VeryLast";
+    private static final String URL = "jdbc:mysql://localhost:3306/verylast";
     private static final String USER = "root";
-    private static final String PASSWORD = "Kana 321?";
+    private static final String PASSWORD = "toor";
 
     private static ConnectionManager instance;
     private Connection connection;

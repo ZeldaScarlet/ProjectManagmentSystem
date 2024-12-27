@@ -75,7 +75,7 @@ public class ProjectListPage extends JPanel{
         }
     }
 
-    public ProjectListPage() {
+    public ProjectListPage(JPanel previousFrame) {
         setLayout(new BorderLayout());
 
         // Tabloyu başlatırken "Görev Ekle" sütunu ekliyoruz
@@ -94,6 +94,9 @@ public class ProjectListPage extends JPanel{
         projectTable.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 18));
         projectTable.getTableHeader().setBackground(new Color(220, 220, 220));
         add(scrollPane, BorderLayout.CENTER);
+
+        BackButton backButton = new BackButton(this, previousFrame);
+        add(backButton, BorderLayout.NORTH);
 
         // Projeleri yükle
         loadProjects();

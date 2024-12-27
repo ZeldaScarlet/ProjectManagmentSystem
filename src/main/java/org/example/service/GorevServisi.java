@@ -3,6 +3,8 @@ package org.example.service;
 import org.example.dao.GorevDAO;
 import org.example.model.Gorev;
 
+import javax.swing.*;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,6 +2,8 @@ package org.example.controller;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ProjectManagementApp extends JFrame {
     private CardLayout cardLayout; // Sayfalar arası geçişi yönetecek
@@ -19,10 +21,14 @@ public class ProjectManagementApp extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         // Sayfalar oluşturulup ana panele ekleniyor
-        mainPanel.add(new LoginPage(this), "LoginPage");
-        mainPanel.add(new HomePage(this), "HomePage");
-        mainPanel.add(new ProjectListPage(), "ProjectListPage");
-        mainPanel.add(new EmployeeListPage(), "EmployeeListPage");
+        LoginPage lp = new LoginPage(this);
+        HomePage hp = new HomePage(this);
+        ProjectListPage plp = new ProjectListPage(hp);
+        EmployeeListPage elp = new EmployeeListPage(hp);
+        mainPanel.add(lp, "LoginPage");
+        mainPanel.add(hp, "HomePage");
+        mainPanel.add(plp,  "ProjectListPage");
+        mainPanel.add(elp , "EmployeeListPage");
 
 
         this.add(mainPanel);
@@ -37,5 +43,31 @@ public class ProjectManagementApp extends JFrame {
 
     public static void main(String[] args) {
         new ProjectManagementApp();
+    }
+
+    public static class BackButton extends JPanel {
+        public BackButton(JFrame currentFrame, JFrame previousFrame) {
+            setLayout(new BorderLayout());
+            setPreferredSize(new Dimension(60, 30)); // Küçük ve kompakt bir boyut
+
+            JButton btnBack = new JButton("←");
+            btnBack.setFont(new Font("Arial", Font.BOLD, 14)); // Basit ve okunabilir
+            btnBack.setToolTipText("Geri Dön");
+            btnBack.setFocusPainted(false);
+            btnBack.setBorder(BorderFactory.createEmptyBorder());
+            btnBack.setBackground(Color.LIGHT_GRAY);
+            btnBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            // Tuşa basıldığında mevcut sayfa kapanır ve önceki sayfa açılır
+            btnBack.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    currentFrame.dispose(); // Mevcut sayfayı kapat
+                    previousFrame.setVisible(true); // Önceki sayfayı göster
+                }
+            });
+
+            add(btnBack, BorderLayout.CENTER);
+        }
     }
 }
