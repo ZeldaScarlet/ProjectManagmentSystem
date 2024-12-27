@@ -11,6 +11,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeListPage extends JPanel {
@@ -35,22 +36,48 @@ public class EmployeeListPage extends JPanel {
         private String label;
         private JButton button;
 
-        public ButtonEditor(JCheckBox checkBox) {
+        public ButtonEditor(JCheckBox checkBox, JPanel previousFrame) {
             super(checkBox);
             button = new JButton();
             button.setFont(new Font("Tahoma", Font.PLAIN, 14));
             button.setBackground(new Color(70, 130, 180));
             button.setForeground(Color.WHITE);
+
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Butona tıklandığında yapılacak işlem (Çalışan Detayları)
-                    int row = employeeTable.getSelectedRow();
-                    String employeeName = (String) employeeTable.getValueAt(row, 1); // Çalışan adı alınıyor
-                    JOptionPane.showMessageDialog(button, employeeName + " için detaylar görüntüleniyor!", "Çalışan Detayları", JOptionPane.INFORMATION_MESSAGE);
+                    int selectedRow = employeeTable.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        // Tablodan çalışan bilgilerini al
+                        String employeeName = (String) employeeTable.getValueAt(selectedRow, 1); // Çalışan adı
+
+                        // Çalışanın görev aldığı projeleri veritabanından al (örnek veri ile gösterim)
+                        List<Object[]> employeeProjects = getEmployeeProjects(employeeName);
+
+                        // Çalışanın projeler sayfasını aç
+                        EmployeeDetailPage employeeProjectsPage = new EmployeeDetailPage(previousFrame, employeeName, employeeProjects);
+
+                        // Mevcut sayfayı gizle ve yeni sayfayı göster
+                        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(previousFrame);
+                        frame.setContentPane(employeeProjectsPage);
+                        frame.revalidate();
+                        frame.repaint();
+                    }
                 }
             });
         }
+
+        // Çalışanın görev aldığı projeleri döndüren örnek bir metot
+        private List<Object[]> getEmployeeProjects(String employeeName) {
+            // Bu metodu veritabanı bağlantısı ile entegre edin
+            // Şu anda sabit verilerle örnekleme yapılmıştır
+            List<Object[]> projects = new ArrayList<>();
+            projects.add(new Object[]{"Proje A", "2023-01-01", "2023-06-01", "Tamamlandı"});
+            projects.add(new Object[]{"Proje B", "2023-07-01", "2023-12-31", "Devam Ediyor"});
+            projects.add(new Object[]{"Proje C", "2024-01-01", "2024-03-31", "Tamamlanacak"});
+            return projects;
+        }
+
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
@@ -75,7 +102,7 @@ public class EmployeeListPage extends JPanel {
         employeeTable = new JTable(tableModel);
         employeeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         employeeTable.getColumn("Detay").setCellRenderer(new ButtonRenderer());
-        employeeTable.getColumn("Detay").setCellEditor(new ButtonEditor(new JCheckBox()));
+        employeeTable.getColumn("Detay").setCellEditor(new ButtonEditor(new JCheckBox() , previousFrame));
         JScrollPane scrollPane = new JScrollPane(employeeTable);
 
 
