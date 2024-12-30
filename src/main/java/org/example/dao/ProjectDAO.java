@@ -77,6 +77,35 @@ public class ProjectDAO {
         }
     }
 
+    public List<Proje> getProjectsByEmployeeId(int id) {
+        String query = "SELECT * FROM projeler WHERE calisan_id = ?";
+        List<Proje> projects = new ArrayList<>();
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id); // Çalışan ID'sini parametre olarak ekle
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Proje proje = new Proje(
+                        resultSet.getInt("proje_id"),
+                        resultSet.getString("proje_adi"),
+                        resultSet.getDate("baslama_tarihi").toLocalDate(),
+                        resultSet.getDate("bitis_tarihi").toLocalDate()
+                );
+
+                proje.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
+                proje.setOlusturanKullaniciId(resultSet.getInt("olusturan_kullanici_id"));
+                projects.add(proje); // Listeye proje ekle
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return projects; // Projeler listesini döndür
+    }
+
+
+
 
 
 }

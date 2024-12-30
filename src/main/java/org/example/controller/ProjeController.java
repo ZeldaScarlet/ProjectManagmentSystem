@@ -47,9 +47,8 @@ public class ProjeController {
         return isDeleted;
     }
 
-    public void getTasksByProjectId(int projectId){
-
-
+    public List<Proje> getProjectsByEmployeeId(int projectId){
+         return projectDAO.getProjectsByEmployeeId(projectId);
     }
 
 

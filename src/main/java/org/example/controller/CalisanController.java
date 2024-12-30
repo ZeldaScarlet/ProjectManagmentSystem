@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.dao.CalisanDAO;
 import org.example.model.Calisan;
+import org.example.model.Proje;
 import org.example.view.EmployeesPagePanel;
 import javax.swing.*;
 import java.sql.SQLException;
@@ -61,26 +62,8 @@ public class CalisanController {
 
     //İd ile çalışan bilgileri alma
 
-    public void getEmployeeById(int employeeId) {
-        try {
-            Calisan calisan = employeeDAO.getEmployeeById(employeeId); // DAO'dan çalışan bilgilerini alıyoruz
-            if (calisan != null) {
-                // Çalışan bilgilerini göster
-                JOptionPane.showMessageDialog(null,
-                        "Çalışan ID: " + calisan.getCalisanId() + "\nÇalışan Adı: " + calisan.getCalisanAdiSoyadi(),
-                        "Çalışan Bilgileri",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null,
-                        "Bu ID'ye sahip bir çalışan bulunamadı.",
-                        "Bilgi",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null,
-                    "Çalışan bilgilerini alırken bir hata oluştu: " + e.getMessage(),
-                    "Hata",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+    public List<Proje> getEmployeeById(int employeeId) {
+        return CalisanDAO.getProjectsByEmployeeId(employeeId);
     }
+
 }

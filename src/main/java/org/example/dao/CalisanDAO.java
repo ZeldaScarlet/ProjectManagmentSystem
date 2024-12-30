@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.controller.CalisanController;
 import org.example.db.ConnectionManager;
 import org.example.model.Calisan;
 import org.example.model.Kullanici;
@@ -42,37 +43,6 @@ public class CalisanDAO {
 
         return calisanlar;
     }
-
-    /*public List<Proje> getProjectsByEmployeeId(int calisanId) {
-        List<Proje> projeler = new ArrayList<>();
-        String query = "SELECT p.proje_id, p.proje_adi, p.baslama_tarihi, p.bitis_tarihi, p.erteleme_miktari, p.olusturan_kullanici_id " +
-                "FROM projeler p " +
-                "JOIN gorevler g ON p.proje_id = g.proje_id " +
-                "WHERE g.calisan_id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setInt(1, calisanId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                Proje proje = new Proje(
-                        resultSet.getInt("proje_id"),
-                        resultSet.getString("proje_adi"),
-                        resultSet.getDate("baslama_tarihi").toLocalDate(),
-                        resultSet.getDate("bitis_tarihi").toLocalDate(),
-                        resultSet.getInt("erteleme_miktari"),
-                        resultSet.getInt("olusturan_kullanici_id")
-                );
-                projeler.add(proje);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return projeler;
-    }*/
 
     public void addEmployee(Calisan calisan) {
         String query = "INSERT INTO calisanlar (adi_Soyadi) VALUES (?)";
@@ -117,6 +87,37 @@ public class CalisanDAO {
         }
 
         return calisan;
+    }
+
+    public static List<Proje> getProjectsByEmployeeId(int calisanId) {
+        List<Proje> projeler = new ArrayList<>();
+        String query = "SELECT p.proje_id, p.proje_adi, p.baslama_tarihi, p.bitis_tarihi, p.erteleme_miktari, p.olusturan_kullanici_id " +
+                "FROM projeler p " +
+                "JOIN gorevler g ON p.proje_id = g.proje_id " +
+                "WHERE g.calisan_id = ?";
+
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, calisanId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Proje proje = new Proje();
+                proje.setProjeId(resultSet.getInt("proje_id"));
+                proje.setProjeAdi(resultSet.getString("proje_adi"));
+                proje.setBaslamaTarihi(resultSet.getDate("baslama_tarihi").toLocalDate());
+                proje.setBitisTarihi(resultSet.getDate("bitis_tarihi").toLocalDate());
+                proje.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
+                proje.setOlusturanKullaniciId(resultSet.getInt("olusturan_kullanici_id"));
+                projeler.add(proje);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return projeler;
     }
 
 

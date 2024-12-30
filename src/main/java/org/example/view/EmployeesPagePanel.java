@@ -107,7 +107,6 @@ public class EmployeesPagePanel extends JPanel {
         }
     }
 
-    // Çalışan detaylarını açan metot
     public void openEmployeeDetailPage() {
         int selectedRow = employeesTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -115,12 +114,14 @@ public class EmployeesPagePanel extends JPanel {
             return;
         }
 
+        // Seçilen çalışanın bilgilerini al
         int employeeId = (int) employeesTable.getValueAt(selectedRow, 0);
-        controller.getEmployeeById(employeeId);
         String employeeName = (String) employeesTable.getValueAt(selectedRow, 1);
 
-
+        // EmployeeDetailPage'i oluştur ve ana sayfaya ekle
         EmployeeDetailPage detailPage = new EmployeeDetailPage(mainPage, employeeName, employeeId);
-        mainPage.getCardLayout().show(mainPage.getCards(), "EmployeeDetailPage");
+
+        mainPage.getCards().add(detailPage, "EmployeeDetailPage"); // Yeni kart ekleniyor
+        mainPage.getCardLayout().show(mainPage.getCards(), "EmployeeDetailPage"); // Yeni sayfayı göster
     }
 }

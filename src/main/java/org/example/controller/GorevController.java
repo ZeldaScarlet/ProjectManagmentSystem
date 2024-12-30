@@ -39,23 +39,28 @@ public class GorevController {
         }
     }
 
-    public List<Object[]> getTasksByProjectId(int projectId) {
+    public List<Gorev[]> getTasksByProjectId(int projectId) {
         List<Gorev> gorevler = gorevDAO.getTasksByProjectId(projectId);
-        List<Object[]> taskList = new ArrayList<>();
+        List<Gorev[]> taskList = new ArrayList<>();
 
         for (Gorev gorev : gorevler) {
-            taskList.add(new Object[]{
-                    gorev.getGorevId(),
-                    gorev.getGorevAdi(),
-                    gorev.getBaslamaTarihi(),
-                    gorev.getBitisTarihi(),
-                    gorev.getAdamGunSayisi(),
-                    gorev.getErtelemeMiktari() + " gün",
-                    gorev.getDurum(),
-                    gorev.getAtanancalisan()
-            });
+            Gorev[] gorevArray = new Gorev[]{
+                    new Gorev(
+                            gorev.getGorevId(),
+                            gorev.getGorevAdi(),
+                            gorev.getBaslamaTarihi(),
+                            gorev.getBitisTarihi(),
+                            gorev.getErtelemeMiktari(),
+                            gorev.getAdamGunSayisi(),
+                            gorev.getDurum(),
+                            gorev.getAtanancalisan(),
+                            gorev.getProjeId()
+                    )
+            };
+            taskList.add(gorevArray);
         }
 
         return taskList;
     }
+
 }

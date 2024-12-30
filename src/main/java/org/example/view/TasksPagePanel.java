@@ -83,7 +83,7 @@ public class TasksPagePanel extends JPanel {
 
     public void loadTasksForProject(int projectId) {
         try {
-            List<Object[]> tasks = taskController.getTasksByProjectId(projectId);
+            List<Gorev[]> tasks = taskController.getTasksByProjectId(projectId);
 
             // Mevcut tabloyu temizle
             tableModel.setRowCount(0);

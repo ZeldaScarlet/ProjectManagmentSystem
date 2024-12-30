@@ -1,84 +1,113 @@
 package org.example.view;
 
+import org.example.controller.ProjeController;
+import org.example.controller.GorevController;
+import org.example.model.Proje;
+import org.example.model.Gorev;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
+
+import static org.example.dao.CalisanDAO.getProjectsByEmployeeId;
 
 public class EmployeeDetailPage extends JPanel {
+
+    private JTable projectTable;
+    private JTable taskTable;
+    private DefaultTableModel projectTableModel;
+    private DefaultTableModel taskTableModel;
+    private JLabel completedProjectsLabel;
+    private JLabel completedTasksLabel;
     private MainPage mainPage;
-    private String employeeName;
     private int employeeId;
-    private int completedTasks;
-    private int ongoingTasks;
-    private int upcomingTasks;
+    private ProjeController projeController;
+    private GorevController gorevController;
 
     public EmployeeDetailPage(MainPage mainPage, String employeeName, int employeeId) {
         this.mainPage = mainPage;
-        this.employeeName = employeeName;
         this.employeeId = employeeId;
-        //this.completedTasks = completedTasks;
-        //this.ongoingTasks = ongoingTasks;
-        //this.upcomingTasks = upcomingTasks;
 
-        setLayout(new BorderLayout(20, 20)); // Genel kenar boşlukları
+        setLayout(new BorderLayout(10, 10));
 
-        // Başlık Paneli
-        JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Üst kısım: Çalışan adı
+        JLabel employeeNameLabel = new JLabel("Çalışan: " + employeeName, JLabel.CENTER);
+        employeeNameLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
+        employeeNameLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(employeeNameLabel, BorderLayout.NORTH);
 
-        JLabel titleLabel = new JLabel("Çalışan Detayları", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(Color.BLUE);
-        headerPanel.add(titleLabel, BorderLayout.CENTER);
+        // Orta kısım: Projeler ve görevler tablosu
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setResizeWeight(0.5);
 
-        add(headerPanel, BorderLayout.NORTH);
+        // Projeler tablosu
+        projectTableModel = new DefaultTableModel(new String[]{"Proje ID", "Proje Adı", "Durum"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        projectTable = new JTable(projectTableModel);
+        projectTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        projectTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && projectTable.getSelectedRow() != -1) {
+                int selectedProjectId = (int) projectTableModel.getValueAt(projectTable.getSelectedRow(), 0);
+                gorevController.getTasksByProjectId(selectedProjectId);
+            }
+        });
+        JScrollPane projectScrollPane = new JScrollPane(projectTable);
+        projectScrollPane.setBorder(BorderFactory.createTitledBorder("Çalışanın Yer Aldığı Projeler"));
+        splitPane.setTopComponent(projectScrollPane);
 
-        // Detaylar Paneli
-        JPanel detailsPanel = new JPanel();
-        detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
-        detailsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // Görevler tablosu
+        taskTableModel = new DefaultTableModel(new String[]{"Görev ID", "Görev Adı", "Durum"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        taskTable = new JTable(taskTableModel);
+        JScrollPane taskScrollPane = new JScrollPane(taskTable);
+        taskScrollPane.setBorder(BorderFactory.createTitledBorder("Seçilen Projenin Görevleri"));
+        splitPane.setBottomComponent(taskScrollPane);
 
-        detailsPanel.add(createDetailRow("Çalışan Adı:", employeeName));
-        detailsPanel.add(Box.createVerticalStrut(10)); // Dikey boşluk
+        add(splitPane, BorderLayout.CENTER);
 
-        detailsPanel.add(createDetailRow("Çalışan ID:", String.valueOf(employeeId)));
-        detailsPanel.add(Box.createVerticalStrut(10));
+        // Alt kısım: İstatistikler ve Geri Düğmesi
+        JPanel combinedPanel = new JPanel(new BorderLayout());
 
-        detailsPanel.add(createDetailRow("Devam Eden Görevler:", String.valueOf(ongoingTasks)));
-        detailsPanel.add(Box.createVerticalStrut(10));
+// İstatistik paneli
+        JPanel statsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        completedProjectsLabel = new JLabel("Tamamlanan Proje Sayısı: 0");
+        completedTasksLabel = new JLabel("Tamamlanan Görev Sayısı: 0");
+        completedProjectsLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+        completedTasksLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+        statsPanel.add(completedProjectsLabel);
+        statsPanel.add(completedTasksLabel);
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        detailsPanel.add(createDetailRow("Tamamlanan Görevler:", String.valueOf(completedTasks)));
-        detailsPanel.add(Box.createVerticalStrut(10));
-
-        detailsPanel.add(createDetailRow("Yaklaşan Görevler:", String.valueOf(upcomingTasks)));
-
-        add(detailsPanel, BorderLayout.CENTER);
-
-        // Alt Panel (Geri Butonu)
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
-
+// Geri düğmesi paneli
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         JButton backButton = new JButton("Geri");
         backButton.setFont(new Font("Arial", Font.PLAIN, 14));
         backButton.addActionListener(e -> mainPage.getCardLayout().show(mainPage.getCards(), "EmployeesPage"));
+        buttonPanel.add(backButton);
 
-        bottomPanel.add(backButton);
-        add(bottomPanel, BorderLayout.SOUTH);
+// İstatistik panelini ve düğme panelini üst panele ekle
+        combinedPanel.add(statsPanel, BorderLayout.CENTER);
+        combinedPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+// Üst paneli ana düzenin güneyine ekle
+        add(combinedPanel, BorderLayout.SOUTH);
+
+// Çalışanın projelerini yükle
+        getProjectsByEmployeeId(employeeId);
+
     }
 
-    /**
-     * Bir detay satırı oluşturan yardımcı metot.
-     */
-    private JPanel createDetailRow(String labelText, String valueText) {
-        JPanel rowPanel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Arial", Font.BOLD, 16));
-        JLabel value = new JLabel(valueText);
-        value.setFont(new Font("Arial", Font.PLAIN, 16));
 
-        rowPanel.add(label, BorderLayout.WEST);
-        rowPanel.add(value, BorderLayout.EAST);
 
-        return rowPanel;
-    }
+
+
 }
