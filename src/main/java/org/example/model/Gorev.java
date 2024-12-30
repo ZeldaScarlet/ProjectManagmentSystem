@@ -11,11 +11,35 @@ public class Gorev {
     private int ertelemeMiktari;
     private int adamGunSayisi;
     private String durum;
+    private Calisan atanancalisan;
     private int projeId;
-    private int calisanId;
+
+    public int getProjeId() {
+        return projeId;
+    }
+
+    public void setProjeId(int projeId) {
+        this.projeId = projeId;
+    }
 
     // Constructor
-    public Gorev(String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, int projeId, int calisanId) {
+    public Gorev() {
+
+    }
+
+    public Gorev(int gorevId, String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, Calisan atananCalisan, int projeId){
+        this.gorevId = gorevId;
+        this.gorevAdi = gorevAdi;
+        this.baslamaTarihi = baslamaTarihi;
+        this.bitisTarihi = bitisTarihi;
+        this.ertelemeMiktari = ertelemeMiktari;
+        this.adamGunSayisi = adamGunSayisi;
+        this.durum = durum;
+        this.atanancalisan = atananCalisan;
+        this.projeId = projeId;
+    }
+
+    public Gorev(String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, Calisan calisan) {
 
         this.gorevAdi = gorevAdi;
         this.baslamaTarihi = baslamaTarihi;
@@ -23,8 +47,7 @@ public class Gorev {
         this.ertelemeMiktari = ertelemeMiktari;
         this.adamGunSayisi = adamGunSayisi;
         this.durum = durum;
-        this.projeId = projeId;
-        this.calisanId = calisanId;
+        atanancalisan = calisan;
     }
 
     // Getter ve Setter
@@ -84,19 +107,11 @@ public class Gorev {
         this.durum = durum;
     }
 
-    public int getProjeId() {
-        return projeId;
+    public Calisan getAtanancalisan() {
+        return atanancalisan;
     }
 
-    public void setProjeId(int projeId) {
-        this.projeId = projeId;
-    }
-
-    public int getCalisanId() {
-        return calisanId;
-    }
-
-    public void setCalisanId(int calisanId) {
-        this.calisanId = calisanId;
+    public void setAtanancalisan(Calisan atanancalisan) {
+        this.atanancalisan = atanancalisan;
     }
 }

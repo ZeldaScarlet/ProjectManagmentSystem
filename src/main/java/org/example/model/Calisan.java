@@ -2,12 +2,12 @@ package org.example.model;
 
 public class Calisan {
     private int calisanId;
-    private String adiSoyadi;
+    private String calisanAdiSoyadi;
 
     // Constructor
-    public Calisan(int calisanId, String adiSoyadi) {
+    public Calisan(int calisanId, String calisanAdiSoyadi) {
         this.calisanId = calisanId;
-        this.adiSoyadi = adiSoyadi;
+        this.calisanAdiSoyadi = calisanAdiSoyadi;
     }
 
     // Getter ve Setter
@@ -19,12 +19,12 @@ public class Calisan {
         this.calisanId = calisanId;
     }
 
-    public String getAdiSoyadi() {
-        return adiSoyadi;
+    public String getCalisanAdiSoyadi() {
+        return calisanAdiSoyadi;
     }
 
     public void setAdiSoyadi(String adiSoyadi) {
-        this.adiSoyadi = adiSoyadi;
+        this.calisanAdiSoyadi = adiSoyadi;
     }
 }
 

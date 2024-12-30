@@ -1,12 +1,12 @@
-package org.example.service;
+package org.example.controller;
 
 import org.example.dao.KullaniciDAO;
 import org.example.model.Kullanici;
 
-public class KullaniciServisi {
+public class KullaniciController {
     private KullaniciDAO kullaniciDAO;
 
-    public KullaniciServisi(){
+    public KullaniciController(){
         this.kullaniciDAO = new KullaniciDAO();
     }
 

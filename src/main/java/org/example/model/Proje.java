@@ -1,35 +1,37 @@
 package org.example.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Proje {
     private int projeId;
     private String projeAdi;
     private LocalDate baslamaTarihi;
     private LocalDate bitisTarihi;
-    private int ertelemeMiktari;
+    private int ertelemeMiktari = 0;
     private int olusturanKullaniciId;
+    private List<Gorev> gorevler;
 
     // Parametresiz Constructor
     public Proje() {}
 
     // Parametreli Constructor
-    public Proje(int projeId, String projeAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int olusturanKullaniciId) {
+    public Proje(int projeId, String projeAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi) {
         this.projeId = projeId;
         this.projeAdi = projeAdi;
         this.baslamaTarihi = baslamaTarihi;
         this.bitisTarihi = bitisTarihi;
-        this.ertelemeMiktari = ertelemeMiktari;
-        this.olusturanKullaniciId = olusturanKullaniciId;
+        /*this.ertelemeMiktari = ertelemeMiktari;
+        this.gorevler = gorevler;*/
     }
 
-    public Proje(String projeAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari) {
+    public Proje (String projeAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi){
         this.projeAdi = projeAdi;
         this.baslamaTarihi = baslamaTarihi;
         this.bitisTarihi = bitisTarihi;
-        this.ertelemeMiktari = ertelemeMiktari;
-        this.olusturanKullaniciId = olusturanKullaniciId;
     }
+
+
 
     // Getter ve Setter
     public int getProjeId() {

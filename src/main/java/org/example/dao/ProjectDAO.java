@@ -9,23 +9,21 @@ import java.util.List;
 
 
 public class ProjectDAO {
-    private ConnectionManager connectionManager;
 
-    public ProjectDAO(){
-        this.connectionManager = ConnectionManager.getInstance();
+
+    public ProjectDAO() throws SQLException {
     }
 
     public boolean projeKaydet(Proje proje) {
 
-        String query = "INSERT INTO projeler(proje_adi, baslama_tarihi, bitis_tarihi, erteleme_miktari) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO projeler(proje_adi, baslama_tarihi, bitis_tarihi) VALUES (?, ?, ?)";
 
-        try (Connection connection = ConnectionManager.getInstance().getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, proje.getProjeAdi());
             preparedStatement.setDate(2, Date.valueOf(proje.getBaslamaTarihi()));
             preparedStatement.setDate(3, Date.valueOf(proje.getBitisTarihi()));
-            preparedStatement.setInt(4, proje.getErtelemeMiktari());
 
             int rowsAffected = preparedStatement.executeUpdate();
 
@@ -41,7 +39,7 @@ public class ProjectDAO {
     public List<Proje> getAllProjects() {
         String query = "SELECT * FROM projeler";
         List<Proje> projects = new ArrayList<>();
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
@@ -50,10 +48,11 @@ public class ProjectDAO {
                         resultSet.getInt("proje_id"),
                         resultSet.getString("proje_adi"),
                         resultSet.getDate("baslama_tarihi").toLocalDate(),
-                        resultSet.getDate("bitis_tarihi").toLocalDate(),
-                        resultSet.getInt("erteleme_miktari"),
-                        resultSet.getInt("olusturan_kullanici_id")
+                        resultSet.getDate("bitis_tarihi").toLocalDate()
                 );
+
+                proje.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
+                proje.setOlusturanKullaniciId(resultSet.getInt("olusturan_kullanici_id"));
                 projects.add(proje);
             }
 
@@ -61,6 +60,21 @@ public class ProjectDAO {
             e.printStackTrace();
         }
         return projects;
+    }
+
+    // Projeyi silen metod
+    public boolean deleteProject(int projeId) {
+        String sql = "DELETE FROM projeler WHERE proje_id = ?";
+
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, projeId);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0; // Silme işlemi başarılıysa true döner
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 

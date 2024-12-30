@@ -14,10 +14,9 @@ import java.util.List;
 
 public class CalisanDAO {
 
-    private ConnectionManager connectionManager;
 
-    public CalisanDAO(){
-        this.connectionManager = ConnectionManager.getInstance();
+    public CalisanDAO() throws SQLException {
+
     }
 
 
@@ -25,7 +24,7 @@ public class CalisanDAO {
         List<Calisan> calisanlar = new ArrayList<>();
         String query = "SELECT * FROM calisanlar";
 
-        try (Connection connection = ConnectionManager.getInstance().getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
@@ -44,15 +43,14 @@ public class CalisanDAO {
         return calisanlar;
     }
 
-    public List<Proje> getProjectsByEmployeeId(int calisanId) {
+    /*public List<Proje> getProjectsByEmployeeId(int calisanId) {
         List<Proje> projeler = new ArrayList<>();
         String query = "SELECT p.proje_id, p.proje_adi, p.baslama_tarihi, p.bitis_tarihi, p.erteleme_miktari, p.olusturan_kullanici_id " +
                 "FROM projeler p " +
                 "JOIN gorevler g ON p.proje_id = g.proje_id " +
                 "WHERE g.calisan_id = ?";
 
-        try (Connection connection = ConnectionManager.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, calisanId);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -74,18 +72,51 @@ public class CalisanDAO {
         }
 
         return projeler;
-    }
+    }*/
 
     public void addEmployee(Calisan calisan) {
         String query = "INSERT INTO calisanlar (adi_Soyadi) VALUES (?)";
-        try (Connection connection = ConnectionManager.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, calisan.getAdiSoyadi());
-            stmt.executeUpdate();
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, calisan.getCalisanAdiSoyadi());
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Çalışan eklenirken hata oluştu", e);
         }
+    }
+
+    // Çalışanı ID'ye göre silme metodu
+    public void deleteEmployee(int employeeId) {
+        String sql = "DELETE FROM calisanlar WHERE calisan_id = ?";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, employeeId); // ID parametresini ayarla
+            preparedStatement.executeUpdate(); // Silme işlemini gerçekleştir
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Çalışan silinirken bir hata oluştu: " + e.getMessage());
+        }
+    }
+
+    public Calisan getEmployeeById(int id) throws SQLException {
+        String query = "SELECT * FROM calisanlar WHERE calisan_id = ?";
+        Calisan calisan = null;
+
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int employeeId = rs.getInt("calisan_id");
+                    String employeeName = rs.getString("adi_soyadi");
+                    calisan = new Calisan(employeeId, employeeName);
+                }
+            }
+        }
+
+        return calisan;
     }
 
 

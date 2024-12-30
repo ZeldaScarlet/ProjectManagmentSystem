@@ -9,12 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class KullaniciDAO {
-    private ConnectionManager connectionManager;
-    public KullaniciDAO(){
 
-        this.connectionManager = ConnectionManager.getInstance();
-
-    }
+    public KullaniciDAO(){}
 
     public Kullanici kullaniciAdiVeParolaylaAl(String kullaniciAdi, String parola){
 
@@ -22,7 +18,7 @@ public class KullaniciDAO {
         Kullanici kullanici = null;
 
 
-        try(Connection connection = connectionManager.getConnection();
+        try(Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, kullaniciAdi);
@@ -47,7 +43,7 @@ public class KullaniciDAO {
 
         String query = "INSERT INTO kullanicilar(kullanici_adi, parola) VALUES (?, ?)";
 
-        try(Connection connection = ConnectionManager.getInstance().getConnection();
+        try(Connection connection = ConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, kullanici.getKullaniciAdi());
