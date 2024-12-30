@@ -3,11 +3,10 @@ package org.example.dao;
 import org.example.db.ConnectionManager;
 import org.example.model.Gorev;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GorevDAO {
 
@@ -40,4 +39,42 @@ public class GorevDAO {
         }
         return false;
     }
+
+    public List<Gorev> getTasksByProjectId(int projectId) {
+        String query = "SELECT g.gorev_id, g.gorev_adi, g.baslangic_tarihi, g.bitis_tarihi, g.durum " +
+                "FROM gorevler g WHERE g.proje_id = ?";
+
+        List<Gorev> gorevler = new ArrayList<>();
+
+        try (Connection connection = ConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, projectId); // Proje ID'sini parametreye bağla
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int gorevId = resultSet.getInt("gorev_id");
+                    String gorevAdi = resultSet.getString("gorev_adi");
+                    Date baslangicTarihi = resultSet.getDate("baslangic_tarihi");
+                    Date bitisTarihi = resultSet.getDate("bitis_tarihi");
+                    String durum = resultSet.getString("durum");
+                    int ertelemeMiktari = resultSet.getInt("erteleme_miktari");
+                    int projeId = resultSet.getInt("proje_id");
+                    int calisanId = resultSet.getInt("calisan_id");
+                    int adamgun = resultSet.getInt("adamgun_sayisi");
+
+
+                    // Gorev nesnesi oluştur ve listeye ekle
+                    Gorev gorev = new Gorev(gorevAdi, baslangicTarihi.toLocalDate(), bitisTarihi.toLocalDate(), ertelemeMiktari,adamgun, durum , projectId , calisanId);
+                    gorevler.add(gorev);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Veritabanından görevler alınırken hata oluştu: " + e.getMessage());
+        }
+
+        return gorevler;
+    }
+
 }

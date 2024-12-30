@@ -60,11 +60,11 @@ public class EmployeeDetailPage extends JPanel {
         // Proje verilerini tabloya ekle
         for (Proje project : employeeProjects) {
             // Proje bilgilerini tabloya ekle (Proje nesnesinden gerekli bilgileri al)
-            Object[] row = {project.getProjeAdi(), project.getBaslamaTarihi(), project.getBitisTarihi(), project.getDurum()};
+            Object[] row = {project.getProjeAdi(), project.getBaslamaTarihi(), project.getBitisTarihi(),};
             tableModel.addRow(row);
 
             // Proje durumu istatistiklerini hesapla
-            String status = project.ge;
+            String status = "project.ge";
             if ("Tamamlandı".equalsIgnoreCase(status)) {
                 completedCount++;
             } else {

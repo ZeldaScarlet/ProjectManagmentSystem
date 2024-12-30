@@ -19,9 +19,4 @@ public class GorevServisi {
 
         return gorevDAO.gorevKaydet(gorev);
     }
-
-    public List<Gorev> getTasksByProjectId(int projectId) {
-        List<Gorev> gorevler = new ArrayList<>();
-        return gorevler;
-    }
 }
