@@ -11,8 +11,8 @@ public class Gorev {
     private int ertelemeMiktari;
     private int adamGunSayisi;
     private String durum;
-    private Calisan atanancalisan;
     private int projeId;
+    private Calisan atanancalisan;
 
     public int getProjeId() {
         return projeId;
@@ -22,12 +22,20 @@ public class Gorev {
         this.projeId = projeId;
     }
 
+    public Calisan getAtanancalisan() {
+        return atanancalisan;
+    }
+
+    public void setAtanancalisan(Calisan atananCalisan) {
+        this.atanancalisan = atananCalisan;
+    }
+
     // Constructor
     public Gorev() {
 
     }
 
-    public Gorev(int gorevId, String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, Calisan atananCalisan, int projeId){
+    public Gorev(int gorevId, String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, Calisan atanancalisan, int projeId){
         this.gorevId = gorevId;
         this.gorevAdi = gorevAdi;
         this.baslamaTarihi = baslamaTarihi;
@@ -35,11 +43,11 @@ public class Gorev {
         this.ertelemeMiktari = ertelemeMiktari;
         this.adamGunSayisi = adamGunSayisi;
         this.durum = durum;
-        this.atanancalisan = atananCalisan;
+        this.atanancalisan = atanancalisan;
         this.projeId = projeId;
     }
 
-    public Gorev(String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, Calisan calisan) {
+    public Gorev(String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, int projeId,Calisan atanancalisan) {
 
         this.gorevAdi = gorevAdi;
         this.baslamaTarihi = baslamaTarihi;
@@ -47,7 +55,8 @@ public class Gorev {
         this.ertelemeMiktari = ertelemeMiktari;
         this.adamGunSayisi = adamGunSayisi;
         this.durum = durum;
-        atanancalisan = calisan;
+        this.projeId = projeId;
+        this.atanancalisan = atanancalisan;
     }
 
     // Getter ve Setter
@@ -107,11 +116,4 @@ public class Gorev {
         this.durum = durum;
     }
 
-    public Calisan getAtanancalisan() {
-        return atanancalisan;
-    }
-
-    public void setAtanancalisan(Calisan atanancalisan) {
-        this.atanancalisan = atanancalisan;
-    }
 }

@@ -5,7 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 import org.example.controller.GorevController;
-import org.example.controller.ProjeController;
+import org.example.model.Calisan;
 import org.example.model.Gorev;
 import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
@@ -18,22 +18,17 @@ import java.util.List;
 import java.util.Properties;
 
 public class TasksPagePanel extends JPanel {
-    private JTable taskTable;
+    private MainPage mainPage;
+    private JTable tasksTable;
     private DefaultTableModel tableModel;
     private String projectName; // Proje adı
     private int projectId;
     private GorevController taskController;
 
-    public int getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
-    }
 
     public TasksPagePanel(MainPage mainPage) {
-        taskController = new GorevController(mainPage);
+        this.mainPage = mainPage;
+        taskController = new GorevController(this);
         setLayout(new BorderLayout());
 
         // Başlık olarak proje adını ekleme
@@ -52,8 +47,10 @@ public class TasksPagePanel extends JPanel {
             }
         };
 
-        taskTable = new JTable(tableModel);
-        JScrollPane tableScrollPane = new JScrollPane(taskTable);
+        tasksTable = new JTable(tableModel);
+        tasksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        JScrollPane tableScrollPane = new JScrollPane(tasksTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(tableScrollPane, BorderLayout.CENTER);
 
@@ -87,6 +84,13 @@ public class TasksPagePanel extends JPanel {
             projectLabel.setText("Proje Adı: " + projectName);
         }
     }
+
+
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
+    }
+
+
 
     public void loadTasksForProject(int projectId) {
         try {
@@ -144,7 +148,12 @@ public class TasksPagePanel extends JPanel {
 
         // Çalışan Seçimi (ComboBox)
         dialog.add(new JLabel("Çalışan Seçin:"));
-        JComboBox<String> employeeComboBox = new JComboBox<>(new String[]{"Ali Yılmaz", "Ayşe Kaya", "Mehmet Demir"});
+        JComboBox<Calisan> employeeComboBox = new JComboBox<>();
+
+        for(Calisan calisan : taskController.listAllCalisan()){
+            employeeComboBox.addItem(calisan);
+        }
+
         dialog.add(employeeComboBox);
 
         // Kaydet ve Kapat butonları
@@ -153,8 +162,12 @@ public class TasksPagePanel extends JPanel {
             String taskName = taskNameField.getText();
             String startDate = getDateFromDatePicker(startDatePicker);
             String endDate = getDateFromDatePicker(endDatePicker);
-            String manDays = manDaysField.getText();
-            String selectedEmployee = (String) employeeComboBox.getSelectedItem();
+            int manDays =  Integer.parseInt(manDaysField.getText());
+
+            Calisan selectedEmployee = (Calisan) employeeComboBox.getSelectedItem();
+
+            taskController.gorevEkle(taskName, startDate,endDate,manDays, this.projectId, selectedEmployee);
+
 
             Object[] newRow = {
                     tableModel.getRowCount() + 1,
@@ -164,7 +177,7 @@ public class TasksPagePanel extends JPanel {
                     manDays,
                     "0 gün",
                     "Devam Ediyor",
-                    selectedEmployee
+                    selectedEmployee.toString()
             };
             tableModel.addRow(newRow);
             dialog.dispose();
@@ -203,7 +216,7 @@ public class TasksPagePanel extends JPanel {
 
 
     private void deleteSelectedTask() {
-        int selectedRow = taskTable.getSelectedRow();
+        int selectedRow = tasksTable.getSelectedRow();
         if (selectedRow != -1) {
             tableModel.removeRow(selectedRow);
             JOptionPane.showMessageDialog(this, "Seçilen görev silindi.");

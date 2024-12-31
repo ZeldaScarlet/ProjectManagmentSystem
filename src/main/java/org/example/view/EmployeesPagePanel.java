@@ -37,17 +37,20 @@ public class EmployeesPagePanel extends JPanel {
         JScrollPane tableScrollPane = new JScrollPane(employeesTable);
         add(tableScrollPane, BorderLayout.CENTER);
 
+        //Düğme Paneli
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
+        //"Çalışan Ekle" düğmesi
         addEmployeeButton = new JButton("Çalışan Ekle");
         addEmployeeButton.addActionListener(e -> addEmployee(model));
         bottomPanel.add(addEmployeeButton);
 
+        //"Çalışan Sil" düğmesi
         deleteEmployeeButton = new JButton("Çalışan Sil");
         deleteEmployeeButton.setEnabled(false);
         deleteEmployeeButton.addActionListener(e -> deleteEmployee(model));
         bottomPanel.add(deleteEmployeeButton);
-
+        // "Detay Gör" düğmesi
         viewDetailsButton = new JButton("Detay Gör");
         viewDetailsButton.setEnabled(false);
         viewDetailsButton.addActionListener(e -> openEmployeeDetailPage());

@@ -102,6 +102,7 @@ public class MainPage extends JFrame {
                 String projeAdi = (String) tableModel.getValueAt(selectedRow, 1);
 
                 TasksPagePanel tasksPagePanel = (TasksPagePanel) cards.getComponent(2);
+                tasksPagePanel.setProjectId(projeID);
                 tasksPagePanel.setProjectName(projeAdi);
                 tasksPagePanel.loadTasksForProject(projeID);
                 cardLayout.show(cards, "TasksPage");

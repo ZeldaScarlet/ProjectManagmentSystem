@@ -14,10 +14,10 @@ public class GorevDAO {
     public GorevDAO(){
     }
 
-    /*public boolean gorevKaydet(Gorev gorev){
-        String query = "INSERT INTO gorevler(gorev_adi, baslama_tarihi, bitis_tarihi, erteleme_miktari, adam_gun_sayisi, proje_id, calisan_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public void gorevKaydet(Gorev gorev){
+        String query = "INSERT INTO gorevler(gorev_adi, baslama_tarihi, bitis_tarihi, erteleme_miktari, adam_gun_sayisi, durum ,proje_id, calisan_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try(Connection connection = ConnectionManager.getInstance().getConnection();
+        try(Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, gorev.getGorevAdi());
@@ -25,18 +25,15 @@ public class GorevDAO {
             preparedStatement.setDate(3, Date.valueOf(gorev.getBitisTarihi()));
             preparedStatement.setInt(4, gorev.getErtelemeMiktari());
             preparedStatement.setInt(5, gorev.getAdamGunSayisi());
-            preparedStatement.setInt(6, gorev.getProjeId());
-            preparedStatement.setInt(7, gorev.getCalisan());
-
-
-            int rowsaffected = preparedStatement.executeUpdate();
-            return rowsaffected > 0;
+            preparedStatement.setString(6, gorev.getDurum());
+            preparedStatement.setInt(7, gorev.getProjeId());
+            preparedStatement.setInt(8, (gorev.getAtanancalisan()).getCalisanId());
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("Gorev eklenirken DAO sınıfında bir hata oluştu!");
+            System.out.println("Gorev eklenirken DAO sınıfında bir hata oluştu!" + e.getMessage());
         }
-        return false;
-    }*/
+    }
 
 
     // Görevi ID'ye göre silme metodu
@@ -57,10 +54,12 @@ public class GorevDAO {
 
     public List<Gorev> getTasksByProjectId(int projectId) {
         List<Gorev> gorevler = new ArrayList<>();
-        String query = "SELECT * FROM gorevler WHERE proje_id =" + projectId;
+        String query = "SELECT * FROM gorevler WHERE proje_id = ?";
 
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, projectId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
@@ -81,17 +80,17 @@ public class GorevDAO {
         return gorevler;
     }
 
-    public List<Gorev> getTasksByEmployeeId(int projectId) {
+    public List<Gorev> getTasksByEmployeeId(int employeeId) {
+        List<Gorev> gorevler = new ArrayList<>();
         String query = "SELECT * FROM gorevler WHERE calisan_id = ?";
-        List<Gorev> tasks = new ArrayList<>();
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement.setInt(1, projectId); // Proje ID'sini parametre olarak ekle
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, employeeId);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                // Veritabanındaki satırları alarak görev nesneleri oluştur
                 Gorev gorev = new Gorev();
                 gorev.setGorevId(resultSet.getInt("gorev_id"));
                 gorev.setGorevAdi(resultSet.getString("gorev_adi"));
@@ -100,13 +99,12 @@ public class GorevDAO {
                 gorev.setAdamGunSayisi(resultSet.getInt("adam_gun_sayisi"));
                 gorev.setDurum(resultSet.getString("durum"));
                 gorev.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
-                // Listeye görev ekle
-                tasks.add(gorev);
+                gorevler.add(gorev);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return tasks; // Görevler listesini döndür
-    }
 
+        return gorevler;
+    }
 }

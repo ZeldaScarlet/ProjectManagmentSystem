@@ -120,8 +120,6 @@ public class CalisanDAO {
         return projeler;
     }
 
-
-
 }
 
 

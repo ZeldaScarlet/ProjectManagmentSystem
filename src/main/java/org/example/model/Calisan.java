@@ -26,5 +26,9 @@ public class Calisan {
     public void setAdiSoyadi(String adiSoyadi) {
         this.calisanAdiSoyadi = adiSoyadi;
     }
+
+    public String toString(){
+        return calisanAdiSoyadi;
+    }
 }
 
