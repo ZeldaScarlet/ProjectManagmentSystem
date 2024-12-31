@@ -21,7 +21,7 @@ public class EmployeeDetailPage extends JPanel {
     private MainPage mainPage;
     private int employeeId;
     private ProjeController projeController;
-    private GorevController gorevController;
+    private GorevController gorevController = new GorevController(mainPage);
 
     public EmployeeDetailPage(MainPage mainPage, String employeeName, int employeeId) {
         this.mainPage = mainPage;
@@ -100,28 +100,16 @@ public class EmployeeDetailPage extends JPanel {
         add(combinedPanel, BorderLayout.SOUTH);
 
         // Çalışanın projelerini yükle
-        loadProjectsForEmployee(employeeId);
+        loadTasksForProject(employeeId);
     }
 
-    // Çalışanın projelerini yükle
-    private void loadProjectsForEmployee(int employeeId) {
-        List<Proje> projects = projeController.getProjectsByEmployeeId(employeeId);
-        for (Proje project : projects) {
-            projectTableModel.addRow(new Object[]{
-                    project.getProjeId(),
-                    project.getProjeAdi(),
-            });
-        }
-    }
 
     // Seçilen projeye ait görevleri yükle
     private void loadTasksForProject(int projectId) {
-        // Gorev[] döndüren fonksiyon
-        Gorev[] tasks = gorevController.getTasksByProjectId(projectId); // Burada Gorev[] döndürdüğünüzü varsayıyoruz
+        // List<Gorev[]> döndüren fonksiyon
+        List<Gorev> tasks = gorevController.getTasksByEmployeeId(projectId); // Liste içinde diziler
         taskTableModel.setRowCount(0); // Mevcut görevleri temizle
-
-        // Gorev[] içinde her bir Gorev nesnesini işlemek için döngü
-        for (Gorev task : tasks) {
+        for (Gorev task : tasks) {  // Gorev[] dizisi içerisindeki her bir görevi işliyoruz
             taskTableModel.addRow(new Object[]{
                     task.getGorevId(),       // Görev ID
                     task.getGorevAdi(),      // Görev Adı
