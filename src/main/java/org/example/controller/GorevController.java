@@ -63,4 +63,8 @@ public class GorevController {
         return taskList;
     }
 
+    public List<Gorev> getTasksByEmployeeId(int Id) {
+        return gorevDAO.getTasksByEmployeeId(Id);
+    }
+
 }

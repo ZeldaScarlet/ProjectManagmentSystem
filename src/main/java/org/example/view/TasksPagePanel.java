@@ -7,8 +7,15 @@ import java.awt.*;
 import org.example.controller.GorevController;
 import org.example.controller.ProjeController;
 import org.example.model.Gorev;
+import org.jdatepicker.impl.DateComponentFormatter;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Properties;
 
 public class TasksPagePanel extends JPanel {
     private JTable taskTable;
@@ -89,18 +96,31 @@ public class TasksPagePanel extends JPanel {
             tableModel.setRowCount(0);
 
             // Görevleri tabloya ekle
-            for (Object[] task : tasks) {
-                tableModel.addRow(task);
+            for (Gorev[] taskArray : tasks) {
+                for (Gorev task : taskArray) {
+                    tableModel.addRow(new Object[]{
+                            task.getGorevId(),
+                            task.getGorevAdi(),
+                            task.getBaslamaTarihi(),
+                            task.getBitisTarihi() != null ? task.getBitisTarihi() : "Henüz tamamlanmadı",
+                            task.getAdamGunSayisi(),
+                            task.getErtelemeMiktari() + " gün",
+                            task.getDurum(),
+                            task.getAtanancalisan() != null ? task.getAtanancalisan().getCalisanAdiSoyadi() : "Atanmamış"
+                    });
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Görevler yüklenirken bir hata oluştu: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+
+
     // Görev ekleme diyalog penceresi
     private void openAddTaskDialog() {
         JDialog dialog = new JDialog((Frame) null, "Yeni Görev Ekle", true);
-        dialog.setLayout(new GridLayout(7, 2, 10, 10)); // 7 satır, 2 sütun düzeni
+        dialog.setLayout(new GridLayout(7, 2, 10, 10 )); // 7 satır, 2 sütun düzeni
 
         // Görev Adı
         dialog.add(new JLabel("Görev Adı:"));
@@ -109,13 +129,13 @@ public class TasksPagePanel extends JPanel {
 
         // Başlangıç Tarihi
         dialog.add(new JLabel("Başlangıç Tarihi:"));
-        JTextField startDateField = new JTextField();
-        dialog.add(startDateField);
+        JDatePickerImpl startDatePicker = createDatePicker();
+        dialog.add(startDatePicker);
 
         // Bitiş Tarihi
         dialog.add(new JLabel("Bitiş Tarihi:"));
-        JTextField endDateField = new JTextField();
-        dialog.add(endDateField);
+        JDatePickerImpl endDatePicker = createDatePicker();
+        dialog.add(endDatePicker);
 
         // Adam Gün Sayısı
         dialog.add(new JLabel("Adam Gün Sayısı:"));
@@ -131,8 +151,8 @@ public class TasksPagePanel extends JPanel {
         JButton saveButton = new JButton("Kaydet");
         saveButton.addActionListener(e -> {
             String taskName = taskNameField.getText();
-            String startDate = startDateField.getText();
-            String endDate = endDateField.getText();
+            String startDate = getDateFromDatePicker(startDatePicker);
+            String endDate = getDateFromDatePicker(endDatePicker);
             String manDays = manDaysField.getText();
             String selectedEmployee = (String) employeeComboBox.getSelectedItem();
 
@@ -159,6 +179,28 @@ public class TasksPagePanel extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
+    private JDatePickerImpl createDatePicker() {
+        UtilDateModel model = new UtilDateModel();
+        Properties i18nStrings = new Properties();
+        i18nStrings.put("text.today", "Bugün");
+        i18nStrings.put("text.month", "Ay");
+        i18nStrings.put("text.year", "Yıl");
+
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, i18nStrings);
+        JFormattedTextField.AbstractFormatter formatter = new DateComponentFormatter();
+        return new JDatePickerImpl(datePanel, formatter);
+    }
+
+    private String getDateFromDatePicker(JDatePickerImpl datePicker) {
+        Object selectedDate = datePicker.getModel().getValue();
+        if (selectedDate != null) {
+            LocalDate localDate = ((java.util.Date) selectedDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            return localDate.toString();  // YYYY-MM-DD formatında döndürür
+        }
+        return "";
+    }
+
 
     private void deleteSelectedTask() {
         int selectedRow = taskTable.getSelectedRow();

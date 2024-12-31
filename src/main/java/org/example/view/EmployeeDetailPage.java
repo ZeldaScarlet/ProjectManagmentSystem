@@ -10,8 +10,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-import static org.example.dao.CalisanDAO.getProjectsByEmployeeId;
-
 public class EmployeeDetailPage extends JPanel {
 
     private JTable projectTable;
@@ -53,7 +51,7 @@ public class EmployeeDetailPage extends JPanel {
         projectTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && projectTable.getSelectedRow() != -1) {
                 int selectedProjectId = (int) projectTableModel.getValueAt(projectTable.getSelectedRow(), 0);
-                gorevController.getTasksByProjectId(selectedProjectId);
+                loadTasksForProject(selectedProjectId);  // Görevleri yükle
             }
         });
         JScrollPane projectScrollPane = new JScrollPane(projectTable);
@@ -77,7 +75,7 @@ public class EmployeeDetailPage extends JPanel {
         // Alt kısım: İstatistikler ve Geri Düğmesi
         JPanel combinedPanel = new JPanel(new BorderLayout());
 
-// İstatistik paneli
+        // İstatistik paneli
         JPanel statsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         completedProjectsLabel = new JLabel("Tamamlanan Proje Sayısı: 0");
         completedTasksLabel = new JLabel("Tamamlanan Görev Sayısı: 0");
@@ -87,27 +85,48 @@ public class EmployeeDetailPage extends JPanel {
         statsPanel.add(completedTasksLabel);
         statsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-// Geri düğmesi paneli
+        // Geri düğmesi paneli
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         JButton backButton = new JButton("Geri");
         backButton.setFont(new Font("Arial", Font.PLAIN, 14));
         backButton.addActionListener(e -> mainPage.getCardLayout().show(mainPage.getCards(), "EmployeesPage"));
         buttonPanel.add(backButton);
 
-// İstatistik panelini ve düğme panelini üst panele ekle
+        // İstatistik panelini ve düğme panelini üst panele ekle
         combinedPanel.add(statsPanel, BorderLayout.CENTER);
         combinedPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-// Üst paneli ana düzenin güneyine ekle
+        // Üst paneli ana düzenin güneyine ekle
         add(combinedPanel, BorderLayout.SOUTH);
 
-// Çalışanın projelerini yükle
-        getProjectsByEmployeeId(employeeId);
-
+        // Çalışanın projelerini yükle
+        loadProjectsForEmployee(employeeId);
     }
 
+    // Çalışanın projelerini yükle
+    private void loadProjectsForEmployee(int employeeId) {
+        List<Proje> projects = projeController.getProjectsByEmployeeId(employeeId);
+        for (Proje project : projects) {
+            projectTableModel.addRow(new Object[]{
+                    project.getProjeId(),
+                    project.getProjeAdi(),
+            });
+        }
+    }
 
+    // Seçilen projeye ait görevleri yükle
+    private void loadTasksForProject(int projectId) {
+        // Gorev[] döndüren fonksiyon
+        Gorev[] tasks = gorevController.getTasksByProjectId(projectId); // Burada Gorev[] döndürdüğünüzü varsayıyoruz
+        taskTableModel.setRowCount(0); // Mevcut görevleri temizle
 
-
-
+        // Gorev[] içinde her bir Gorev nesnesini işlemek için döngü
+        for (Gorev task : tasks) {
+            taskTableModel.addRow(new Object[]{
+                    task.getGorevId(),       // Görev ID
+                    task.getGorevAdi(),      // Görev Adı
+                    task.getDurum()          // Durum
+            });
+        }
+    }
 }
