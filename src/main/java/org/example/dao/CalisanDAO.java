@@ -120,6 +120,20 @@ public class CalisanDAO {
         return projeler;
     }
 
+    String sql = "SELECT \n" +
+            "    gorevler.gorev_id AS GorevID,\n" +
+            "    gorevler.gorev_adi AS GorevAdi,\n" +
+            "    gorevler.durum AS GorevDurumu,\n" +
+            "    gorevler.calisan_id AS id,\n" +
+            "    projeler.proje_id AS ProjeID,\n" +
+            "    projeler.proje_adi AS ProjeAdi,\n" +
+            "    projeler.baslama_tarihi AS BaslamaTarihi,\n" +
+            "    projeler.bitis_tarihi AS BitisTarihi\n" +
+            "FROM \n" +
+            "    gorevler\n" +
+            "INNER JOIN \n" +
+            "    projeler ON gorevler.proje_id = projeler.proje_id";
+
 }
 
 

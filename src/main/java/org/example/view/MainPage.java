@@ -17,22 +17,26 @@ public class MainPage extends JFrame {
     private JButton viewTasksButton;
     private JTable projectTable;
     private DefaultTableModel tableModel;
+    private ProjeController projeController = new ProjeController(this);
 
     public MainPage() {
         // Ana pencere ayarları
-        setTitle("Anasayfa");
+        setTitle("Giriş ve Yönetim Sistemi");
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        //projeController.updateProjectStatusAndDelay();
 
         // CardLayout oluşturuluyor
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
 
-        // ProjeController
-        ProjeController projeController = new ProjeController(this);
+        // LoginPage'i ekle
+        LoginPage loginPage = new LoginPage(this);
+        cards.add(loginPage, "LoginPage");
 
-        // Panelleri ekle
+        // Ana sayfa paneli ve diğer panelleri ekle
         JPanel mainPagePanel = createMainPagePanel();
         EmployeesPagePanel employeesPagePanel = new EmployeesPagePanel(this);
         TasksPagePanel tasksPagePanel = new TasksPagePanel(this);
@@ -45,7 +49,10 @@ public class MainPage extends JFrame {
 
         setVisible(true);
 
-        // Tüm projeleri listele
+        // Başlangıçta LoginPage göster
+        cardLayout.show(cards, "LoginPage");
+
+        ProjeController projeController = new ProjeController(this);
         projeController.listAllProjects();
     }
 
@@ -101,7 +108,7 @@ public class MainPage extends JFrame {
                 int projeID = (int) tableModel.getValueAt(selectedRow, 0);
                 String projeAdi = (String) tableModel.getValueAt(selectedRow, 1);
 
-                TasksPagePanel tasksPagePanel = (TasksPagePanel) cards.getComponent(2);
+                TasksPagePanel tasksPagePanel = (TasksPagePanel) cards.getComponent(3);
                 tasksPagePanel.setProjectId(projeID);
                 tasksPagePanel.setProjectName(projeAdi);
                 tasksPagePanel.loadTasksForProject(projeID);
@@ -149,4 +156,9 @@ public class MainPage extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainPage::new);
     }
+
+    public void showMainPage() {
+        cardLayout.show(cards, "MainPage");
+    }
+
 }

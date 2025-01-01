@@ -40,23 +40,6 @@ public class EmployeeDetailPage extends JPanel {
         splitPane.setResizeWeight(0.5);
 
         // Projeler tablosu
-        projectTableModel = new DefaultTableModel(new String[]{"Proje ID", "Proje Adı", "Durum"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        projectTable = new JTable(projectTableModel);
-        projectTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        projectTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && projectTable.getSelectedRow() != -1) {
-                int selectedProjectId = (int) projectTableModel.getValueAt(projectTable.getSelectedRow(), 0);
-                loadTasksForProject(selectedProjectId);  // Görevleri yükle
-            }
-        });
-        JScrollPane projectScrollPane = new JScrollPane(projectTable);
-        projectScrollPane.setBorder(BorderFactory.createTitledBorder("Çalışanın Yer Aldığı Projeler"));
-        splitPane.setTopComponent(projectScrollPane);
 
         // Görevler tablosu
         taskTableModel = new DefaultTableModel(new String[]{"Görev ID", "Görev Adı", "Durum"}, 0) {
@@ -67,7 +50,7 @@ public class EmployeeDetailPage extends JPanel {
         };
         taskTable = new JTable(taskTableModel);
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
-        taskScrollPane.setBorder(BorderFactory.createTitledBorder("Seçilen Projenin Görevleri"));
+        taskScrollPane.setBorder(BorderFactory.createTitledBorder("Yer Aldığı Görevler"));
         splitPane.setBottomComponent(taskScrollPane);
 
         add(splitPane, BorderLayout.CENTER);
@@ -77,8 +60,8 @@ public class EmployeeDetailPage extends JPanel {
 
         // İstatistik paneli
         JPanel statsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
-        completedProjectsLabel = new JLabel("Tamamlanan Proje Sayısı: 0");
-        completedTasksLabel = new JLabel("Tamamlanan Görev Sayısı: 0");
+        completedProjectsLabel = new JLabel("Tamamlanan Görev Sayısı: 0");
+        completedTasksLabel = new JLabel("Tamamlanmayan Görev Sayısı: 0");
         completedProjectsLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
         completedTasksLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
         statsPanel.add(completedProjectsLabel);
@@ -100,21 +83,58 @@ public class EmployeeDetailPage extends JPanel {
         add(combinedPanel, BorderLayout.SOUTH);
 
         // Çalışanın projelerini yükle
-        loadTasksForProject(employeeId);
+        loadEmployeeDetails(employeeId);
     }
 
 
     // Seçilen projeye ait görevleri yükle
-    private void loadTasksForProject(int projectId) {
-        // List<Gorev[]> döndüren fonksiyon
-        List<Gorev> tasks = gorevController.getTasksByEmployeeId(projectId); // Liste içinde diziler
+    // Çalışana ait projeleri ve görevleri yükleme
+    private void loadEmployeeDetails(int employeeId) {
+        // Çalışanın görevlerini yükleyin
+        List<Gorev> tasks = gorevController.getTasksByEmployeeId(employeeId);
         taskTableModel.setRowCount(0); // Mevcut görevleri temizle
-        for (Gorev task : tasks) {  // Gorev[] dizisi içerisindeki her bir görevi işliyoruz
+        for (Gorev task : tasks) {
             taskTableModel.addRow(new Object[]{
-                    task.getGorevId(),       // Görev ID
-                    task.getGorevAdi(),      // Görev Adı
-                    task.getDurum()          // Durum
+                    task.getGorevId(),
+                    task.getGorevAdi(),
+                    task.getDurum()
             });
         }
+
+        // Tamamlanan görev sayısını güncelleyin
+        updateCompletedTasksCount(tasks);
+
+        // İstatistikleri güncelleyin
+        updateStatistics(tasks);
+    }
+    private void updateCompletedTasksCount(List<Gorev> tasks) {
+        int completedTasksCount = 0;
+
+        // Görevlerin her birini kontrol et
+        for (Gorev task : tasks) {
+            if ("Tamamlandı".equals(task.getDurum())) {
+                completedTasksCount++;
+            }
+        }
+
+        // Tamamlanan görev sayısını ekranda göster
+        completedTasksLabel.setText("Tamamlanan Görev Sayısı: " + completedTasksCount);
+    }
+
+    private void updateStatistics(List<Gorev> tasks) {
+        int completedTasks = 0;
+        int pendingTasks = 0;
+
+        for (Gorev task : tasks) {
+            if ("tamamlandı".equals(task.getDurum())) {
+                completedTasks++;
+            } else {
+                pendingTasks++;
+            }
+        }
+
+        completedTasksLabel.setText("Tamamlanmayan Görev Sayısı: " + pendingTasks);
+        completedProjectsLabel.setText("Tamamlanan Görev Sayısı: " + completedTasks);
     }
 }
+

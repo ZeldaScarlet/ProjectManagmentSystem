@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dao.GorevDAO;
 import org.example.dao.ProjectDAO;
 import org.example.model.Proje;
 import org.example.view.MainPage;
@@ -47,9 +48,17 @@ public class ProjeController {
         return isDeleted;
     }
 
-    public List<Proje> getProjectsByEmployeeId(int projectId){
-         return projectDAO.getProjectsByEmployeeId(projectId);
+    public List<Proje> getProjectsByProjectd(int projectId){
+         return projectDAO.getProjectsByProjectId(projectId);
     }
+
+
+    // public void  updateProjectStatusAndDelay(){
+    //     GorevDAO.updateProjectStatusAndDelay();
+    // }
+
+
+
 
 
 }

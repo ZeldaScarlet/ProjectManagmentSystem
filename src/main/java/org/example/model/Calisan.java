@@ -10,6 +10,8 @@ public class Calisan {
         this.calisanAdiSoyadi = calisanAdiSoyadi;
     }
 
+    public Calisan() {}
+
     // Getter ve Setter
     public int getCalisanId() {
         return calisanId;

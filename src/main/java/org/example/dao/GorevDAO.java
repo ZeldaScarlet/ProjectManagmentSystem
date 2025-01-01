@@ -54,7 +54,9 @@ public class GorevDAO {
 
     public List<Gorev> getTasksByProjectId(int projectId) {
         List<Gorev> gorevler = new ArrayList<>();
-        String query = "SELECT * FROM gorevler WHERE proje_id = ?";
+        String query = "SELECT g.gorev_id, g.gorev_adi, g.baslama_tarihi, g.bitis_tarihi, g.adam_gun_sayisi, " +
+                "g.durum, g.erteleme_miktari, g.calisan_id, c.adi_soyadi FROM gorevler g " +
+                "JOIN calisanlar c ON g.calisan_id = c.calisan_id WHERE g.proje_id = ?";
 
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -66,11 +68,23 @@ public class GorevDAO {
                 Gorev gorev = new Gorev();
                 gorev.setGorevId(resultSet.getInt("gorev_id"));
                 gorev.setGorevAdi(resultSet.getString("gorev_adi"));
-                gorev.setBaslamaTarihi(resultSet.getDate("baslama_tarihi").toLocalDate());
-                gorev.setBitisTarihi(resultSet.getDate("bitis_tarihi").toLocalDate());
+
+                if (resultSet.getDate("baslama_tarihi") != null) {
+                    gorev.setBaslamaTarihi(resultSet.getDate("baslama_tarihi").toLocalDate());
+                }
+                if (resultSet.getDate("bitis_tarihi") != null) {
+                    gorev.setBitisTarihi(resultSet.getDate("bitis_tarihi").toLocalDate());
+                }
+
                 gorev.setAdamGunSayisi(resultSet.getInt("adam_gun_sayisi"));
                 gorev.setDurum(resultSet.getString("durum"));
                 gorev.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
+
+                // Çalışan bilgisini doğrudan alıyoruz
+                Calisan calisan = new Calisan();
+                calisan.setAdiSoyadi(resultSet.getString("adi_soyadi"));
+                gorev.setAtanancalisan(calisan);
+
                 gorevler.add(gorev);
             }
         } catch (Exception e) {
@@ -78,33 +92,6 @@ public class GorevDAO {
         }
 
         return gorevler;
-    }
 
-    public List<Gorev> getTasksByEmployeeId(int employeeId) {
-        List<Gorev> gorevler = new ArrayList<>();
-        String query = "SELECT * FROM gorevler WHERE calisan_id = ?";
-
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setInt(1, employeeId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                Gorev gorev = new Gorev();
-                gorev.setGorevId(resultSet.getInt("gorev_id"));
-                gorev.setGorevAdi(resultSet.getString("gorev_adi"));
-                gorev.setBaslamaTarihi(resultSet.getDate("baslama_tarihi").toLocalDate());
-                gorev.setBitisTarihi(resultSet.getDate("bitis_tarihi").toLocalDate());
-                gorev.setAdamGunSayisi(resultSet.getInt("adam_gun_sayisi"));
-                gorev.setDurum(resultSet.getString("durum"));
-                gorev.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
-                gorevler.add(gorev);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return gorevler;
     }
 }

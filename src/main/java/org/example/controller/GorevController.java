@@ -89,7 +89,7 @@ public class GorevController {
     }
 
     public List<Gorev> getTasksByEmployeeId(int Id) {
-        return gorevDAO.getTasksByEmployeeId(Id);
+        return gorevDAO.getTasksByProjectId(Id);
     }
 
     public List<Calisan> listAllCalisan() {

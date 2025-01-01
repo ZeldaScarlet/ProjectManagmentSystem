@@ -13,6 +13,7 @@ public class Gorev {
     private String durum;
     private int projeId;
     private Calisan atanancalisan;
+    private int atananCalisanId;
 
     public int getProjeId() {
         return projeId;
@@ -25,6 +26,8 @@ public class Gorev {
     public Calisan getAtanancalisan() {
         return atanancalisan;
     }
+
+    public int setAtananCalisanId;
 
     public void setAtanancalisan(Calisan atananCalisan) {
         this.atanancalisan = atananCalisan;

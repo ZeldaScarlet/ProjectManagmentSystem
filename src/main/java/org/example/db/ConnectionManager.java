@@ -8,7 +8,7 @@ public class ConnectionManager {
     // Veritabanı bağlantısı için gerekli bilgiler
     private static final String URL = "jdbc:mysql://localhost:3306/VeryLast";
     private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "toor";
 
     // Statik bir bağlantı değişkeni
     private static Connection connection;

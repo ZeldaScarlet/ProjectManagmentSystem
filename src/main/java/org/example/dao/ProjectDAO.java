@@ -6,6 +6,8 @@ import org.example.model.Proje;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
 
 
 public class ProjectDAO {
@@ -103,6 +105,35 @@ public class ProjectDAO {
         }
         return projects; // Projeler listesini döndür
     }
+
+    public List<Proje> getProjectsByProjectId(int id) {
+        String query = "SELECT * FROM projeler WHERE proje_id = ?";
+        List<Proje> projects = new ArrayList<>();
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id); // Çalışan ID'sini parametre olarak ekle
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Proje proje = new Proje(
+                        resultSet.getInt("proje_id"),
+                        resultSet.getString("proje_adi"),
+                        resultSet.getDate("baslama_tarihi").toLocalDate(),
+                        resultSet.getDate("bitis_tarihi").toLocalDate()
+                );
+
+                proje.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
+                proje.setOlusturanKullaniciId(resultSet.getInt("olusturan_kullanici_id"));
+                projects.add(proje); // Listeye proje ekle
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return projects; // Projeler listesini döndür
+    }
+
+
 
 
 
