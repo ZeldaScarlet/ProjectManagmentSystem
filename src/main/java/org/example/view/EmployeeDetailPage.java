@@ -87,7 +87,6 @@ public class EmployeeDetailPage extends JPanel {
     }
 
 
-    // Seçilen projeye ait görevleri yükle
     // Çalışana ait projeleri ve görevleri yükleme
     private void loadEmployeeDetails(int employeeId) {
         // Çalışanın görevlerini yükleyin
