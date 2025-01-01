@@ -24,6 +24,7 @@ public class TasksPagePanel extends JPanel {
     private String projectName; // Proje adı
     private int projectId;
     private GorevController taskController;
+    private int selectedRow;
 
 
     public TasksPagePanel(MainPage mainPage) {
@@ -71,6 +72,11 @@ public class TasksPagePanel extends JPanel {
         JButton backToMainPageButton = new JButton("Ana Sayfa");
         backToMainPageButton.addActionListener(e -> mainPage.getCardLayout().show(mainPage.getCards(), "MainPage"));
         buttonPanel.add(backToMainPageButton);
+
+        // "Tamamla" düğmesi
+        JButton completeTaskButton = new JButton("Tamamla");
+        completeTaskButton.addActionListener(e -> completeSelectedTask());
+        buttonPanel.add(completeTaskButton);
 
         // Düğme panelini ekle
         add(buttonPanel, BorderLayout.SOUTH);
@@ -214,14 +220,37 @@ public class TasksPagePanel extends JPanel {
         return "";
     }
 
-
     private void deleteSelectedTask() {
         int selectedRow = tasksTable.getSelectedRow();
+
         if (selectedRow != -1) {
+            // Görev ID'sini önce alın
+            int gorevId = (int) tableModel.getValueAt(selectedRow, 0);
+
+            // Görev silme işlemi
+            taskController.deleteTask(gorevId);
+
+            // Tablodan satırı kaldır
             tableModel.removeRow(selectedRow);
+
             JOptionPane.showMessageDialog(this, "Seçilen görev silindi.");
         } else {
             JOptionPane.showMessageDialog(this, "Lütfen silmek için bir görev seçin.", "Uyarı", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+
+    private void completeSelectedTask() {
+        int selectedRow = tasksTable.getSelectedRow();
+        if (selectedRow != -1) {
+            int gorevId = (int) tableModel.getValueAt(selectedRow, 0); // Görev ID'si 0. sütundan alınır
+            taskController.updateTaskStatus(gorevId); // Controller üzerinden durumu güncelleyin
+
+            // Tabloyu güncelle
+            tableModel.setValueAt("Tamamlandı", selectedRow, 6); // 6. sütun "Durum" sütununa denk geliyor
+            JOptionPane.showMessageDialog(this, JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Lütfen bir görev seçin.", "Uyarı", JOptionPane.WARNING_MESSAGE);
         }
     }
 }

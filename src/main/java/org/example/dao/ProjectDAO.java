@@ -133,10 +133,4 @@ public class ProjectDAO {
         return projects; // Projeler listesini döndür
     }
 
-
-
-
-
-
-
 }

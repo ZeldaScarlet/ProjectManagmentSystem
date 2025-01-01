@@ -1,11 +1,14 @@
 package org.example.view;
 
+import org.example.controller.GorevController;
 import org.example.controller.ProjeController;
+import org.example.dao.GorevDAO;
 import org.example.model.Proje;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 
 public class MainPage extends JFrame {
@@ -18,6 +21,8 @@ public class MainPage extends JFrame {
     private JTable projectTable;
     private DefaultTableModel tableModel;
     private ProjeController projeController = new ProjeController(this);
+    private GorevController gorevController = new GorevController(this);
+    private LocalDate lokalZaman;
 
     public MainPage() {
         // Ana pencere ayarları
@@ -25,6 +30,10 @@ public class MainPage extends JFrame {
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        lokalZaman = LocalDate.now(); // Sistem tarihini alıyoruz
+        gorevController.guncelleProjeDurumlarini();// Proje durumlarını güncelleme fonksiyonunu çağırıyoruz
+
 
         //projeController.updateProjectStatusAndDelay();
 

@@ -90,8 +90,68 @@ public class GorevDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return gorevler;
+    }
+
+    public void updateTask(Gorev gorev) {
+        String updateQuery = "UPDATE gorevler SET durum = ?, erteleme_miktari = ? WHERE gorev_id = ?";
+
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+            preparedStatement.setString(1, gorev.getDurum());
+            preparedStatement.setInt(2, gorev.getErtelemeMiktari());
+            preparedStatement.setInt(3, gorev.getGorevId());
+
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Gorev> getAllTasks() {
+        List<Gorev> gorevler = new ArrayList<>();
+        String query = "SELECT * FROM gorevler";
+
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Gorev gorev = new Gorev();
+                gorev.setGorevId(resultSet.getInt("gorev_id"));
+                gorev.setGorevAdi(resultSet.getString("gorev_adi"));
+
+                if (resultSet.getDate("baslama_tarihi") != null) {
+                    gorev.setBaslamaTarihi(resultSet.getDate("baslama_tarihi").toLocalDate());
+                }
+                if (resultSet.getDate("bitis_tarihi") != null) {
+                    gorev.setBitisTarihi(resultSet.getDate("bitis_tarihi").toLocalDate());
+                }
+
+                gorev.setAdamGunSayisi(resultSet.getInt("adam_gun_sayisi"));
+                gorev.setDurum(resultSet.getString("durum"));
+                gorev.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
+
+                gorevler.add(gorev);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return gorevler;
-
     }
+
+    public void updateTaskStatus(int gorevId) {
+        String query = "UPDATE gorevler SET durum = 'Tamamlandı' WHERE gorev_id = ?";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, gorevId);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

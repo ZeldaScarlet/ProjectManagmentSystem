@@ -11,6 +11,7 @@ import org.example.view.TasksPagePanel;
 import javax.swing.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +53,10 @@ public class GorevController {
     public void deleteTask(int taskId) {
         try {
             gorevDAO.deleteTask(taskId);
-            JOptionPane.showMessageDialog(null, "Çalışan başarıyla silindi.");
+            JOptionPane.showMessageDialog(null, "Görev Silindi");
             //listTasksByProjectId(); // Gorev listesi güncelleniyor
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Çalışan silme hatası: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Görev silme hatası: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -96,6 +97,43 @@ public class GorevController {
         List<Calisan> calisanlar = calisanDAO.getAllEmployees();
 
         return calisanlar;
+    }
+
+    public void guncelleProjeDurumlarini() {
+        // Veritabanındaki görevleri alıyoruz
+        List<Gorev> gorevler = gorevDAO.getAllTasks(); // Veritabanından görevleri çekiyoruz
+        for (Gorev gorev : gorevler) {
+
+
+            LocalDate baslamaTarihi = gorev.getBaslamaTarihi();
+            LocalDate bitisTarihi = gorev.getBitisTarihi();
+            int gecikmeMiktari = gorev.getErtelemeMiktari();
+
+            // Başlangıç tarihi lokal zamandan önce mi?
+            if (gorev.getDurum() != ("Tamamlandı")){
+                if (gorev.getBaslamaTarihi() != null && gorev.getBitisTarihi() != null) {
+                    if (gorev.getBaslamaTarihi().isAfter(LocalDate.now())) {
+                        gorev.setDurum("Tamamlanacak");
+                    } else if (gorev.getBitisTarihi().isBefore(LocalDate.now())) {
+                        long gecikmeGunleri = ChronoUnit.DAYS.between(gorev.getBitisTarihi(), LocalDate.now());
+                        gorev.setErtelemeMiktari((int) gecikmeGunleri);
+                    } else {
+                        gorev.setDurum("Devam Ediyor");
+                    }
+                } else {
+                    // Tarihlerden biri null ise, uygun bir işlem yapın veya varsayılan bir durum atayın.
+                    gorev.setDurum("Tarih Bilgisi Eksik");
+                }
+            }
+            // Durum ve erteleme miktarını veritabanına kaydet
+            gorevDAO.updateTask(gorev);
+        }
+
+    }
+
+    public void updateTaskStatus(int gorevId) {
+        GorevDAO gorevDAO = new GorevDAO();
+        gorevDAO.updateTaskStatus(gorevId);
     }
 
 }
