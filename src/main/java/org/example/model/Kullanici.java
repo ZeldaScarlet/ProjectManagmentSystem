@@ -6,15 +6,6 @@ public class Kullanici {
     private String parola;
 
     // Constructor
-    public Kullanici(int kullaniciId, String kullaniciAdi, String parola) {
-        this.kullaniciId = kullaniciId;
-        this.kullaniciAdi = kullaniciAdi;
-        this.parola = parola;
-    }
-
-    public Kullanici(){
-
-    }
 
     public Kullanici(String kullaniciAdi, String parola){
         this.kullaniciAdi = kullaniciAdi;

@@ -125,11 +125,8 @@ public class ProjeEklePage extends JFrame {
         LocalDate baslangic = LocalDate.parse(baslangicTarihi, formatter);
         LocalDate bitis = LocalDate.parse(bitisTarihi, formatter);
 
-        // Proje nesnesini oluştur
-        Proje proje = new Proje(projeAd, baslangic, bitis);
-
         // ProjeController aracılığıyla projeyi kaydet
-        if (projeController.projeEkle(proje)) {
+        if (projeController.projeEkle(projeAd, baslangic, bitis)) {
             JOptionPane.showMessageDialog(this, "Proje başarıyla kaydedildi.");
             projeController.listAllProjects();
             dispose();  // Sayfayı kapat

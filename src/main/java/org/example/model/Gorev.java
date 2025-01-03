@@ -13,31 +13,12 @@ public class Gorev {
     private String durum;
     private int projeId;
     private Calisan atanancalisan;
-    private int atananCalisanId;
-
-    public int getProjeId() {
-        return projeId;
-    }
-
-    public void setProjeId(int projeId) {
-        this.projeId = projeId;
-    }
-
-    public Calisan getAtanancalisan() {
-        return atanancalisan;
-    }
-
-    public int setAtananCalisanId;
-
-    public void setAtanancalisan(Calisan atananCalisan) {
-        this.atanancalisan = atananCalisan;
-    }
 
     // Constructor
+
     public Gorev() {
 
     }
-
     public Gorev(int gorevId, String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari, int adamGunSayisi, String durum, Calisan atanancalisan, int projeId){
         this.gorevId = gorevId;
         this.gorevAdi = gorevAdi;
@@ -63,10 +44,10 @@ public class Gorev {
     }
 
     // Getter ve Setter
+
     public int getGorevId() {
         return gorevId;
     }
-
     public void setGorevId(int gorevId) {
         this.gorevId = gorevId;
     }
@@ -119,4 +100,19 @@ public class Gorev {
         this.durum = durum;
     }
 
+    public int getProjeId() {
+        return projeId;
+    }
+
+    public void setProjeId(int projeId) {
+        this.projeId = projeId;
+    }
+
+    public Calisan getAtanancalisan() {
+        return atanancalisan;
+    }
+
+    public void setAtanancalisan(Calisan atananCalisan) {
+        this.atanancalisan = atananCalisan;
+    }
 }

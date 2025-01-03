@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 import org.example.controller.GorevController;
+import org.example.controller.ProjeController;
 import org.example.model.Calisan;
 import org.example.model.Gorev;
 import org.jdatepicker.impl.DateComponentFormatter;
@@ -14,6 +15,7 @@ import org.jdatepicker.impl.UtilDateModel;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -24,13 +26,19 @@ public class TasksPagePanel extends JPanel {
     private String projectName; // Proje adı
     private int projectId;
     private GorevController taskController;
+    private ProjeController projeController;
     private int selectedRow;
+    private LocalDate minDate;
+    private LocalDate maxDate;
 
 
     public TasksPagePanel(MainPage mainPage) {
         this.mainPage = mainPage;
         taskController = new GorevController(this);
+        projeController = new ProjeController(mainPage);
         setLayout(new BorderLayout());
+
+
 
         // Başlık olarak proje adını ekleme
         JLabel projectLabel = new JLabel("Proje Adı: " + (projectName != null ? projectName : ""), JLabel.CENTER);
@@ -70,7 +78,11 @@ public class TasksPagePanel extends JPanel {
 
         // "Ana Sayfa" düğmesi
         JButton backToMainPageButton = new JButton("Ana Sayfa");
-        backToMainPageButton.addActionListener(e -> mainPage.getCardLayout().show(mainPage.getCards(), "MainPage"));
+        backToMainPageButton.addActionListener(e ->{
+            mainPage.updateProjectTable(projeController.getAllProjects());
+            mainPage.getCardLayout().show(mainPage.getCards(), "MainPage");
+        });
+
         buttonPanel.add(backToMainPageButton);
 
         // "Tamamla" düğmesi
@@ -139,12 +151,13 @@ public class TasksPagePanel extends JPanel {
 
         // Başlangıç Tarihi
         dialog.add(new JLabel("Başlangıç Tarihi:"));
-        JDatePickerImpl startDatePicker = createDatePicker();
+        JDatePickerImpl startDatePicker = createDatePicker(taskController.getProjectStartDateByProjectId(projectId), taskController.getProjectEndDateByProjectId(projectId));
+
         dialog.add(startDatePicker);
 
         // Bitiş Tarihi
         dialog.add(new JLabel("Bitiş Tarihi:"));
-        JDatePickerImpl endDatePicker = createDatePicker();
+        JDatePickerImpl endDatePicker = createDatePicker(taskController.getProjectStartDateByProjectId(projectId),taskController.getProjectEndDateByProjectId(projectId));
         dialog.add(endDatePicker);
 
         // Adam Gün Sayısı
@@ -172,20 +185,11 @@ public class TasksPagePanel extends JPanel {
 
             Calisan selectedEmployee = (Calisan) employeeComboBox.getSelectedItem();
 
-            taskController.gorevEkle(taskName, startDate,endDate,manDays, this.projectId, selectedEmployee);
+            taskController.gorevEkle(taskName, LocalDate.parse(startDate),LocalDate.parse(endDate),manDays, this.projectId, selectedEmployee);
 
 
-            Object[] newRow = {
-                    tableModel.getRowCount() + 1,
-                    taskName,
-                    startDate,
-                    endDate,
-                    manDays,
-                    "0 gün",
-                    "Devam Ediyor",
-                    selectedEmployee.toString()
-            };
-            tableModel.addRow(newRow);
+
+            loadTasksForProject(this.projectId);
             dialog.dispose();
         });
         dialog.add(saveButton);
@@ -199,17 +203,42 @@ public class TasksPagePanel extends JPanel {
         dialog.setVisible(true);
     }
 
-    private JDatePickerImpl createDatePicker() {
-        UtilDateModel model = new UtilDateModel();
-        Properties i18nStrings = new Properties();
-        i18nStrings.put("text.today", "Bugün");
-        i18nStrings.put("text.month", "Ay");
-        i18nStrings.put("text.year", "Yıl");
 
-        JDatePanelImpl datePanel = new JDatePanelImpl(model, i18nStrings);
+    private JDatePickerImpl createDatePicker(LocalDate minDate, LocalDate maxDate) {
+        UtilDateModel model = new UtilDateModel();
+
+        // Minimum tarihi başlangıç olarak ayarla (isteğe bağlı)
+        if (minDate != null) {
+            model.setDate(minDate.getYear(), minDate.getMonthValue() - 1, minDate.getDayOfMonth());
+            model.setSelected(true); // Varsayılan seçili olarak ayarla
+        }
+
+        Properties properties = new Properties();
+        properties.put("text.today", "Bugün");
+        properties.put("text.month", "Ay");
+        properties.put("text.year", "Yıl");
+
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, properties);
         JFormattedTextField.AbstractFormatter formatter = new DateComponentFormatter();
-        return new JDatePickerImpl(datePanel, formatter);
+
+        JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, formatter);
+
+        // Tarih sınırlandırmaları için dinleyici ekle
+        model.addChangeListener(e -> {
+            LocalDate selectedDate = LocalDate.of(model.getYear(), model.getMonth() + 1, model.getDay());
+            if (minDate != null && selectedDate.isBefore(minDate)) {
+                JOptionPane.showMessageDialog(null, "Seçilen tarih minimum tarihten önce olamaz!");
+                model.setDate(minDate.getYear(), minDate.getMonthValue() - 1, minDate.getDayOfMonth());
+            }
+            if (maxDate != null && selectedDate.isAfter(maxDate)) {
+                JOptionPane.showMessageDialog(null, "Seçilen tarih maksimum tarihten sonra olamaz!");
+                model.setDate(maxDate.getYear(), maxDate.getMonthValue() - 1, maxDate.getDayOfMonth());
+            }
+        });
+
+        return datePicker;
     }
+
 
     private String getDateFromDatePicker(JDatePickerImpl datePicker) {
         Object selectedDate = datePicker.getModel().getValue();

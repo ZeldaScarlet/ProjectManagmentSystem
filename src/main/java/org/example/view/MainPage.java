@@ -20,7 +20,6 @@ public class MainPage extends JFrame {
     private JButton viewTasksButton;
     private JTable projectTable;
     private DefaultTableModel tableModel;
-    private ProjeController projeController = new ProjeController(this);
     private GorevController gorevController = new GorevController(this);
     private LocalDate lokalZaman;
 
@@ -35,7 +34,6 @@ public class MainPage extends JFrame {
         gorevController.guncelleProjeDurumlarini();// Proje durumlarını güncelleme fonksiyonunu çağırıyoruz
 
 
-        //projeController.updateProjectStatusAndDelay();
 
         // CardLayout oluşturuluyor
         cardLayout = new CardLayout();

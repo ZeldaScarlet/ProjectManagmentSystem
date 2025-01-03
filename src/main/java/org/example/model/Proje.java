@@ -8,7 +8,7 @@ public class Proje {
     private String projeAdi;
     private LocalDate baslamaTarihi;
     private LocalDate bitisTarihi;
-    private int ertelemeMiktari = 0;
+    private int ertelemeMiktari;
     private int olusturanKullaniciId;
     private List<Gorev> gorevler;
 
@@ -25,10 +25,11 @@ public class Proje {
         this.gorevler = gorevler;*/
     }
 
-    public Proje (String projeAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi){
+    public Proje (String projeAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int ertelemeMiktari){
         this.projeAdi = projeAdi;
         this.baslamaTarihi = baslamaTarihi;
         this.bitisTarihi = bitisTarihi;
+        this.ertelemeMiktari = ertelemeMiktari;
     }
 
 

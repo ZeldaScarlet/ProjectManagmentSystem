@@ -26,7 +26,6 @@ public class KullaniciController {
         if(kullanici != null && kullanici.getParola().equals(parola)){
             return true;
         }
-        System.out.println("İki");
         return false;
     }
 }

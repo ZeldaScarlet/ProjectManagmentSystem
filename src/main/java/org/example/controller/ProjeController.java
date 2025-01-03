@@ -7,6 +7,9 @@ import org.example.view.MainPage;
 
 import javax.swing.*;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.List;
 
 public class ProjeController {
@@ -24,8 +27,16 @@ public class ProjeController {
     }
 
     // Proje ekleme işlemi
-    public boolean projeEkle(Proje proje){
-        return projectDAO.projeKaydet(proje);
+    public boolean projeEkle(String projeAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi){
+
+        LocalDate lokalZaman = LocalDate.now();
+        int gecikmeMiktari = 0;
+       /* if(lokalZaman.isAfter(bitisTarihi)){
+            gecikmeMiktari = (int) ChronoUnit.DAYS.between(bitisTarihi, lokalZaman);
+        }*/
+
+        Proje yeniProje = new Proje(projeAdi, baslamaTarihi, bitisTarihi, gecikmeMiktari);
+        return projectDAO.projeKaydet(yeniProje);
     }
 
     // Projeleri veritabanından alır ve tabloyu günceller
@@ -52,13 +63,8 @@ public class ProjeController {
          return projectDAO.getProjectsByProjectId(projectId);
     }
 
-
-    // public void  updateProjectStatusAndDelay(){
-    //     GorevDAO.updateProjectStatusAndDelay();
-    // }
-
-
-
-
+    public List<Proje> getAllProjects(){
+        return projectDAO.getAllProjects();
+    }
 
 }

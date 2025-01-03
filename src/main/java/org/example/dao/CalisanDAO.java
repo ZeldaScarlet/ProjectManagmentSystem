@@ -16,9 +16,7 @@ import java.util.List;
 public class CalisanDAO {
 
 
-    public CalisanDAO() throws SQLException {
-
-    }
+    public CalisanDAO() throws SQLException {}
 
 
     public List<Calisan> getAllEmployees() {
@@ -88,51 +86,6 @@ public class CalisanDAO {
 
         return calisan;
     }
-
-    public static List<Proje> getProjectsByEmployeeId(int calisanId) {
-        List<Proje> projeler = new ArrayList<>();
-        String query = "SELECT p.proje_id, p.proje_adi, p.baslama_tarihi, p.bitis_tarihi, p.erteleme_miktari, p.olusturan_kullanici_id " +
-                "FROM projeler p " +
-                "JOIN gorevler g ON p.proje_id = g.proje_id " +
-                "WHERE g.calisan_id = ?";
-
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setInt(1, calisanId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                Proje proje = new Proje();
-                proje.setProjeId(resultSet.getInt("proje_id"));
-                proje.setProjeAdi(resultSet.getString("proje_adi"));
-                proje.setBaslamaTarihi(resultSet.getDate("baslama_tarihi").toLocalDate());
-                proje.setBitisTarihi(resultSet.getDate("bitis_tarihi").toLocalDate());
-                proje.setErtelemeMiktari(resultSet.getInt("erteleme_miktari"));
-                proje.setOlusturanKullaniciId(resultSet.getInt("olusturan_kullanici_id"));
-                projeler.add(proje);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return projeler;
-    }
-
-    String sql = "SELECT \n" +
-            "    gorevler.gorev_id AS GorevID,\n" +
-            "    gorevler.gorev_adi AS GorevAdi,\n" +
-            "    gorevler.durum AS GorevDurumu,\n" +
-            "    gorevler.calisan_id AS id,\n" +
-            "    projeler.proje_id AS ProjeID,\n" +
-            "    projeler.proje_adi AS ProjeAdi,\n" +
-            "    projeler.baslama_tarihi AS BaslamaTarihi,\n" +
-            "    projeler.bitis_tarihi AS BitisTarihi\n" +
-            "FROM \n" +
-            "    gorevler\n" +
-            "INNER JOIN \n" +
-            "    projeler ON gorevler.proje_id = projeler.proje_id";
 
 }
 

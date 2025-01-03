@@ -18,8 +18,10 @@ import java.util.List;
 public class GorevController {
     private GorevDAO gorevDAO;
     private CalisanDAO calisanDAO;
+    private ProjectDAO projectDAO;
     private MainPage mainPage;
     private TasksPagePanel tasksPagePanel;
+    private int ertelemeMiktari;
 
     public GorevController(MainPage mainPage){
         this.mainPage = mainPage;
@@ -36,16 +38,49 @@ public class GorevController {
         try {
             this.gorevDAO = new GorevDAO();
             this.calisanDAO = new CalisanDAO();
+            this.projectDAO = new ProjectDAO();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Veritabanı bağlantı hatası: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void gorevEkle(String GorevAdi, String baslamaTarihi, String bitisTarihi, int adamGunSayisi, int projeId,Calisan atananCalisan){
+    public void gorevEkle(String gorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, int adamGunSayisi, int projeId, Calisan atananCalisan) {
 
-        // erteleme işlemleri ve durum güncellemesi
-        String durum = "Devam ediyor";
-        Gorev gorev = new Gorev(GorevAdi, LocalDate.parse(baslamaTarihi), LocalDate.parse(bitisTarihi), 0, adamGunSayisi, durum, projeId, atananCalisan);
+
+        // Bugünün tarihi
+        LocalDate lokalZaman = LocalDate.now();
+
+        // Görev durumu ve yeni bitiş tarihi
+        String durum;
+        LocalDate yeniBitisTarihi = bitisTarihi;
+
+        // Durum ve erteleme mantığı
+        if (lokalZaman.isBefore(baslamaTarihi)) {
+            // Eğer şu anki tarih görevin başlangıç tarihinden önceyse
+            durum = "tamamlanacak";
+        } else if (lokalZaman.isAfter(baslamaTarihi) && lokalZaman.isBefore(bitisTarihi)) {
+            // Eğer şu anki tarih başlangıç ve bitiş tarihinin arasındaysa
+            durum = "devam ediyor";
+        } else {
+            // Eğer şu anki tarih bitiş tarihinden sonraysa
+            durum = "devam ediyor";
+            ertelemeMiktari = 7;
+
+            // Gecikme miktarını hesapla (bitiş tarihi ile şu anki zaman arasındaki fark)
+            int gecikmeMiktari = (int) ChronoUnit.DAYS.between(bitisTarihi, lokalZaman);
+
+            // Yeni bitiş tarihi, şu anki tarihten 7 gün sonrasına ayarlanıyor
+            yeniBitisTarihi = lokalZaman.plusDays(ertelemeMiktari);
+
+            // Gecikme miktarı göreve atanabilir
+            projectDAO.updateProjectDelayAndEndDate(projeId, gecikmeMiktari, yeniBitisTarihi);
+            // Bu alana gecikme miktarını görevinize eklemek için kullanılabilir.
+        }
+
+        // Görev nesnesi oluşturuluyor
+        Gorev gorev = new Gorev(gorevAdi, baslamaTarihi, yeniBitisTarihi, ertelemeMiktari, adamGunSayisi, durum, projeId, atananCalisan);
+
+        // Görev kaydediliyor
         gorevDAO.gorevKaydet(gorev);
     }
 
@@ -54,15 +89,10 @@ public class GorevController {
         try {
             gorevDAO.deleteTask(taskId);
             JOptionPane.showMessageDialog(null, "Görev Silindi");
-            //listTasksByProjectId(); // Gorev listesi güncelleniyor
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Görev silme hatası: " + e.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    /*public void addTask(String GorevAdi, LocalDate baslamaTarihi, LocalDate bitisTarihi, ) {
-        gorevDAO.gorevKaydet();
-    }*/
 
 
     public List<Gorev[]> getTasksByProjectId(int projectId) {
@@ -132,8 +162,15 @@ public class GorevController {
     }
 
     public void updateTaskStatus(int gorevId) {
-        GorevDAO gorevDAO = new GorevDAO();
         gorevDAO.updateTaskStatus(gorevId);
+    }
+
+    public LocalDate getProjectStartDateByProjectId(int projectId){
+        return projectDAO.getStartDateByProjectId(projectId);
+    }
+
+    public LocalDate getProjectEndDateByProjectId(int projectId) {
+        return projectDAO.getEndDateByProjectId(projectId);
     }
 
 }

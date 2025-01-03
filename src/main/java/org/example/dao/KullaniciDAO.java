@@ -26,11 +26,10 @@ public class KullaniciDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next()){
                 kullanici = new Kullanici(
-                        resultSet.getInt("kullanici_id"),
                         resultSet.getString("kullanici_adi"),
                         resultSet.getString("parola")
                 );
-
+                kullanici.setKullaniciId(resultSet.getInt("kullanici_id"));
             }
 
         } catch (SQLException e) {
